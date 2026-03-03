@@ -82,7 +82,9 @@ body{font-family:'Lato',sans-serif;background:var(--cr);color:var(--br);max-widt
 .tbox p{font-size:13px;line-height:1.5}
 .aitem{background:var(--cd);border-radius:8px;padding:8px 10px;font-size:12px;margin-bottom:5px}
 .aitem strong{color:var(--tr);font-size:9px;text-transform:uppercase;letter-spacing:.4px;display:block;margin-bottom:1px}
-.rlike-btn{width:100%;padding:13px;background:var(--tr);color:#fff;border:none;border-radius:12px;font-family:'Lato',sans-serif;font-weight:700;font-size:15px;cursor:pointer;margin-top:8px}
+.recipe-btns{position:sticky;bottom:0;background:var(--cr);padding:12px 0 4px;display:flex;gap:10px;margin-top:10px}
+.rplate-btn{flex:1;padding:13px;background:var(--tr);color:#fff;border:none;border-radius:12px;font-family:'Lato',sans-serif;font-weight:700;font-size:15px;cursor:pointer}
+.rheart-btn{width:52px;height:52px;background:#fff;border:2px solid var(--tr);border-radius:12px;font-size:22px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 #vLiked{padding:16px 14px 88px}
 #vPlate{padding:16px 14px 88px}
 .shdr{text-align:center;margin-bottom:16px}
@@ -151,10 +153,19 @@ body{font-family:'Lato',sans-serif;background:var(--cr);color:var(--br);max-widt
 </div>
 <div id="vCards" class="view on">
   <div class="card-area" id="cardArea"></div>
-  <p class="hint">Tap card for full recipe · Swipe or use buttons</p>
+  <div style="display:flex;justify-content:space-between;align-items:center;padding:0 12px;margin-bottom:4px">
+  <div style="display:flex;align-items:center;gap:5px;color:#C0392B;font-size:11px;font-weight:700;opacity:.7">
+    <span style="font-size:18px">←</span> Skip
+  </div>
+  <span style="font-size:10px;color:var(--bl);opacity:.6">Tap card for recipe</span>
+  <div style="display:flex;align-items:center;gap:5px;color:#4A7C59;font-size:11px;font-weight:700;opacity:.7">
+    Like <span style="font-size:18px">→</span>
+  </div>
+</div>
   <div class="acts">
     <button class="abtn skip" id="btnSkip">✕</button>
     <button class="abtn info" id="btnInfo">📋</button>
+    <button class="abtn" id="btnPlate" style="background:#fff;color:var(--tu);width:42px;height:42px;font-size:16px">🍽️</button>
     <button class="abtn like" id="btnLike">♥</button>
   </div>
 </div>
@@ -241,7 +252,7 @@ const R=[
 ];
 
 // ── STATE ──────────────────────────────────────────────────────────────────
-const S={tab:'dinner',diet:'all',exAl:[],exIng:[],liked:[],idx:{dinner:0,tiffin:0,snack:0,breakfast:0}};
+const S={tab:'dinner',diet:'all',exAl:[],exIng:[],liked:[],plate:[],idx:{dinner:0,tiffin:0,snack:0,breakfast:0}};
 const $=id=>document.getElementById(id);
 
 // ── FILTER ─────────────────────────────────────────────────────────────────
@@ -372,15 +383,31 @@ function showRecipe(rec){
       <div class="rs"><h2>🔄 Alternatives & Swaps</h2>
         ${Object.entries(rec.alt).map(([k,v])=>`<div class="aitem"><strong>${k.replace(/([A-Z])/g,' $1').replace(/^./,s=>s.toUpperCase())}</strong>${v}</div>`).join('')}
       </div>
-      <button class="rlike-btn" onclick="likeFromRecipe('${rec.id}')">${isLiked?'✓ Already in Liked Meals':'❤️ Add to Liked Meals'}</button>
+      <div class="recipe-btns">
+  <button class="rplate-btn" onclick="addToPlateFromRecipe('${rec.id}')">🍽️ Add to My Plate</button>
+  <button class="rheart-btn" id="heartBtn_${rec.id}" onclick="likeFromRecipe('${rec.id}')">${isLiked?'❤️':'🤍'}</button>
+</div>
     </div>`;
   v.style.display='block';
   setTimeout(()=>v.classList.add('on'),10);
 }
 function likeFromRecipe(id){
   const rec=R.find(r=>r.id===id);
-  if(!S.liked.find(r=>r.id===id)){S.liked.push(rec);updateBadge();toast('❤️ Added to liked meals!');}
-  else toast('Already in your liked meals!');
+  const btn=document.getElementById('heartBtn_'+id);
+  if(!S.liked.find(r=>r.id===id)){
+    S.liked.push(rec);updateBadge();
+    if(btn)btn.textContent='❤️';
+    toast('❤️ Liked!');
+  } else {
+    S.liked=S.liked.filter(r=>r.id!==id);updateBadge();
+    if(btn)btn.textContent='🤍';
+    toast('Removed from liked meals');
+  }
+}
+function addToPlateFromRecipe(id){
+  const rec=R.find(r=>r.id===id);
+  if(!S.plate.find(r=>r.id===rec.id)){S.plate.push(rec);}
+  toast('🍽️ Added to your plate!');
 }
 
 // ── LIKED VIEW ─────────────────────────────────────────────────────────────
@@ -398,16 +425,17 @@ function renderLiked(){
     </div>`).join('')}</div>`;
 }
 function removeLiked(id){S.liked=S.liked.filter(r=>r.id!==id);updateBadge();renderLiked();renderPlate();}
+  function removePlate(id){S.plate=S.plate.filter(r=>r.id!==id);renderPlate();}
 
 // ── PLATE VIEW ─────────────────────────────────────────────────────────────
 function renderPlate(){
   const svgEl=$('plateSvg'),legEl=$('plateLeg'),fbEl=$('plateFB'),chEl=$('plateChips');
-  if(!S.liked.length){
-    svgEl.innerHTML='<div style="text-align:center;padding:30px;color:var(--bl)"><div style="font-size:48px">🍽️</div><p style="font-size:13px;margin-top:8px">Like some meals to see your balance plate</p></div>';
+  if(!S.plate.length){
+    svgEl.innerHTML='<div style="text-align:center;padding:30px;color:var(--bl)"><div style="font-size:48px">🍽️</div><p style="font-size:13px;margin-top:8px">Tap 🍽️ on any meal to build your plate</p></div>';
     legEl.innerHTML='';fbEl.innerHTML='';chEl.innerHTML='';return;
   }
-  const sum=S.liked.reduce((a,r)=>({p:a.p+r.pf.p,c:a.c+r.pf.c,v:a.v+r.pf.v,f:a.f+r.pf.f}),{p:0,c:0,v:0,f:0});
-  const n=S.liked.length;
+  const sum=S.plate.reduce((a,r)=>({p:a.p+r.pf.p,c:a.c+r.pf.c,v:a.v+r.pf.v,f:a.f+r.pf.f}),{p:0,c:0,v:0,f:0});
+  const n=S.plate.length;
   const avg={p:Math.round(sum.p/n),c:Math.round(sum.c/n),v:Math.round(sum.v/n),f:Math.round(sum.f/n)};
   const tot=avg.p+avg.c+avg.v+avg.f||1;
   const vPct=Math.round(avg.v/tot*100),pPct=Math.round(avg.p/tot*100),cPct=Math.round(avg.c/tot*100),fPct=100-vPct-pPct-cPct;
@@ -445,7 +473,7 @@ function renderPlate(){
   else if(avg.c>55){emoji='🌾';title='Slightly carb-heavy';msg='Balance with more vegetables or protein. Try a millet swap or add a salad side.';}
   else if(vPct>=45&&pPct>=20){emoji='⭐';title='Excellent balance!';msg='Great job! Your plate has a lovely balance of vegetables, protein and wholesome carbs.';}
   fbEl.innerHTML=`<div class="fe">${emoji}</div><h3>${title}</h3><p>${msg}</p>`;
-  chEl.innerHTML=S.liked.map(r=>`<span class="pchip">${r.e} ${r.n}</span>`).join('');
+  chEl.innerHTML=S.plate.map(r=>`<span class="pchip" style="cursor:pointer" onclick="removePlate('${r.id}')">✕ ${r.e} ${r.n}</span>`).join('');
 }
 
 // ── FILTER PANEL ───────────────────────────────────────────────────────────
@@ -528,7 +556,13 @@ $('btnInfo').addEventListener('click',()=>{
   const recs=filtered(S.tab);
   if(S.idx[S.tab]<recs.length)showRecipe(recs[S.idx[S.tab]]);
 });
-
+$('btnPlate').addEventListener('click',()=>{
+  const recs=filtered(S.tab);
+  if(S.idx[S.tab]>=recs.length)return;
+  const rec=recs[S.idx[S.tab]];
+  if(!S.plate.find(r=>r.id===rec.id)){S.plate.push(rec);}
+  toast('🍽️ Added to your plate!');
+});
 // ── INIT ───────────────────────────────────────────────────────────────────
 initFilters();
 renderCards();
