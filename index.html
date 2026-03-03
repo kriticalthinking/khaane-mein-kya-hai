@@ -153,21 +153,33 @@ body{font-family:'Lato',sans-serif;background:var(--cr);color:var(--br);max-widt
 </div>
 <div id="vCards" class="view on">
   <div class="card-area" id="cardArea"></div>
-  <div style="display:flex;justify-content:space-between;align-items:center;padding:0 12px;margin-bottom:4px">
+ <div style="display:flex;justify-content:space-between;align-items:center;padding:0 12px;margin-bottom:4px">
   <div style="display:flex;align-items:center;gap:5px;color:#C0392B;font-size:11px;font-weight:700;opacity:.7">
     <span style="font-size:18px">←</span> Skip
   </div>
-  <span style="font-size:10px;color:var(--bl);opacity:.6">Tap card for recipe</span>
+  <span style="font-size:10px;color:var(--bl);opacity:.6">Swipe or use buttons below</span>
   <div style="display:flex;align-items:center;gap:5px;color:#4A7C59;font-size:11px;font-weight:700;opacity:.7">
     Like <span style="font-size:18px">→</span>
   </div>
 </div>
-  <div class="acts">
-    <button class="abtn skip" id="btnSkip">✕</button>
-    <button class="abtn info" id="btnInfo">📋</button>
-    <button class="abtn" id="btnPlate" style="background:#fff;color:var(--tu);width:42px;height:42px;font-size:16px">🍽️</button>
-    <button class="abtn like" id="btnLike">♥</button>
+  <div class="acts" style="gap:10px">
+  <div style="display:flex;flex-direction:column;align-items:center;gap:4px">
+    <button class="abtn skip" id="btnSkip" style="width:52px;height:52px;font-size:20px">✕</button>
+    <span style="font-size:9px;color:var(--nv);font-weight:700;text-transform:uppercase;letter-spacing:.4px">Skip</span>
   </div>
+  <div style="display:flex;flex-direction:column;align-items:center;gap:4px">
+    <button class="abtn info" id="btnInfo" style="width:52px;height:52px;font-size:20px">📋</button>
+    <span style="font-size:9px;color:var(--bl);font-weight:700;text-transform:uppercase;letter-spacing:.4px">Recipe</span>
+  </div>
+  <div style="display:flex;flex-direction:column;align-items:center;gap:4px">
+    <button class="abtn" id="btnPlate" style="background:var(--tr);color:#fff;width:52px;height:52px;font-size:20px;border-radius:50%;border:none;box-shadow:0 4px 12px rgba(0,0,0,.13)">🍽️</button>
+    <span style="font-size:9px;color:var(--tr);font-weight:700;text-transform:uppercase;letter-spacing:.4px">My Plate</span>
+  </div>
+  <div style="display:flex;flex-direction:column;align-items:center;gap:4px">
+    <button class="abtn like" id="btnLike" style="width:52px;height:52px;font-size:20px">♥</button>
+    <span style="font-size:9px;color:var(--vg);font-weight:700;text-transform:uppercase;letter-spacing:.4px">Like</span>
+  </div>
+</div>
 </div>
 <div id="vLiked" class="view">
   <div class="shdr"><h2>Liked Meals ❤️</h2><p>Tap any meal to view full recipe</p></div>
@@ -439,28 +451,38 @@ function renderPlate(){
   const avg={p:Math.round(sum.p/n),c:Math.round(sum.c/n),v:Math.round(sum.v/n),f:Math.round(sum.f/n)};
   const tot=avg.p+avg.c+avg.v+avg.f||1;
   const vPct=Math.round(avg.v/tot*100),pPct=Math.round(avg.p/tot*100),cPct=Math.round(avg.c/tot*100),fPct=100-vPct-pPct-cPct;
-  // Draw SVG plate
-  const cx=110,cy=110,r=95,sw=190;
-  function arc(pct,offset){
-    const ang=pct/100*2*Math.PI,x1=cx+r*Math.sin(offset*2*Math.PI/100),y1=cy-r*Math.cos(offset*2*Math.PI/100);
-    const x2=cx+r*Math.sin((offset+pct)/100*2*Math.PI),y2=cy-r*Math.cos((offset+pct)/100*2*Math.PI);
-    const lg=pct>50?1:0;
-    return `M${cx},${cy} L${x1},${y1} A${r},${r} 0 ${lg},1 ${x2},${y2} Z`;
+  // Draw SVG plates
+  function makePlate(segs,cx,cy,r){
+    let off=0;
+    const paths=segs.map(s=>{
+      const pct=s.pct,ang=pct/100*2*Math.PI;
+      const x1=cx+r*Math.sin(off*2*Math.PI/100),y1=cy-r*Math.cos(off*2*Math.PI/100);
+      const x2=cx+r*Math.sin((off+pct)/100*2*Math.PI),y2=cy-r*Math.cos((off+pct)/100*2*Math.PI);
+      const lg=pct>50?1:0;
+      const d=`M${cx},${cy} L${x1},${y1} A${r},${r} 0 ${lg},1 ${x2},${y2} Z`;
+      off+=pct;
+      return `<path d="${d}" fill="${s.col}" stroke="white" stroke-width="1.5"/>`;
+    }).join('');
+    return paths;
   }
-  let off=0;
-  const segs=[
-    {pct:vPct,col:'#5A9A6F',lbl:'Veg & Fruit'},
-    {pct:pPct,col:'#E07B39',lbl:'Protein'},
-    {pct:cPct,col:'#E8B84B',lbl:'Carbs'},
-    {pct:fPct,col:'#A8C090',lbl:'Fat'}
-  ];
-  const paths=segs.map(s=>{const p=`<path d="${arc(s.pct,off)}" fill="${s.col}" stroke="white" stroke-width="2"/>`;off+=s.pct;return p;}).join('');
-  svgEl.innerHTML=`<svg width="${sw}" height="${sw}" viewBox="0 0 ${sw} ${sw}">
-    <circle cx="${cx}" cy="${cy}" r="${r+5}" fill="#FDF6EC" stroke="#E8B84B" stroke-width="3"/>
-    ${paths}
-    <circle cx="${cx}" cy="${cy}" r="30" fill="white"/>
-    <text x="${cx}" y="${cy+5}" text-anchor="middle" font-size="20">🍽️</text>
-  </svg>`;
+  const COLS=['#5A9A6F','#E07B39','#E8B84B','#A8C090'];
+  const idealSegs=[{pct:50,col:COLS[0]},{pct:25,col:COLS[1]},{pct:25,col:COLS[2]},{pct:0,col:COLS[3]}];
+  const actualSegs=[{pct:vPct,col:COLS[0]},{pct:pPct,col:COLS[1]},{pct:cPct,col:COLS[2]},{pct:fPct,col:COLS[3]}];
+  svgEl.innerHTML=`
+    <svg width="320" height="160" viewBox="0 0 320 160">
+      <!-- Ideal plate (small, left) -->
+      <circle cx="60" cy="75" r="52" fill="#FDF6EC" stroke="#E8B84B" stroke-width="2"/>
+      ${makePlate(idealSegs,60,75,48)}
+      <circle cx="60" cy="75" r="16" fill="white"/>
+      <text x="60" y="79" text-anchor="middle" font-size="13">✓</text>
+      <text x="60" y="140" text-anchor="middle" font-size="10" fill="#7A5C45" font-weight="bold">Ideal</text>
+      <!-- Current plate (large, right) -->
+      <circle cx="210" cy="75" r="72" fill="#FDF6EC" stroke="#E8B84B" stroke-width="2.5"/>
+      ${makePlate(actualSegs,210,75,68)}
+      <circle cx="210" cy="75" r="22" fill="white"/>
+      <text x="210" y="79" text-anchor="middle" font-size="16">🍽️</text>
+      <text x="210" y="156" text-anchor="middle" font-size="10" fill="#7A5C45" font-weight="bold">Your Plate</text>
+    </svg>`;
   legEl.innerHTML=segs.map((s,i)=>`
     <div class="pleg-item">
       <div class="pleg-dot" style="background:${s.col}"></div>
