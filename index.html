@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Khaane Mein Kya Hai?</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{--cr:#FDF6EC;--cd:#F0E6D3;--tr:#D4622A;--tl:#E8845A;--tu:#E8B84B;--br:#3D2B1F;--bl:#7A5C45;--vg:#4A7C59;--nv:#C0392B;--sh:rgba(61,43,31,.15)}
+body{font-family:'Lato',sans-serif;background:var(--cr);color:var(--br);max-width:430px;margin:0 auto;overflow-x:hidden;min-height:100vh}
+.hdr{background:linear-gradient(135deg,var(--tr),#B8471A);padding:12px 14px 10px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:0 2px 12px rgba(0,0,0,.2)}
+.htitle{font-family:'Playfair Display',serif;color:#fff;font-size:17px;line-height:1.2}
+.htitle span{display:block;font-size:9px;font-family:'Lato',sans-serif;font-weight:300;opacity:.8;letter-spacing:.5px}
+.dtog{display:flex;background:rgba(255,255,255,.2);border-radius:20px;padding:3px;gap:2px}
+.dbtn{padding:4px 9px;border:none;border-radius:14px;font-size:10px;font-family:'Lato',sans-serif;font-weight:700;cursor:pointer;background:transparent;color:rgba(255,255,255,.8);transition:.2s}
+.dbtn.on{background:#fff;color:var(--tr)}
+.fbtn{background:rgba(255,255,255,.2);border:none;border-radius:50%;width:32px;height:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;color:#fff;margin-left:6px}
+.tabs{background:var(--cd);display:flex;border-bottom:2px solid var(--tu)}
+.tab{flex:1;padding:9px 4px;border:none;background:transparent;font-family:'Lato',sans-serif;font-size:10px;font-weight:700;color:var(--bl);cursor:pointer;text-align:center;position:relative;white-space:nowrap}
+.tab.on{color:var(--tr)}
+.tab.on::after{content:'';position:absolute;bottom:-2px;left:0;right:0;height:2px;background:var(--tr)}
+.view{display:none;animation:fi .25s ease}.view.on{display:block}
+@keyframes fi{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+#vCards{padding:14px 14px 88px}
+.card-area{position:relative;height:420px;display:flex;align-items:center;justify-content:center}
+.nocards{text-align:center;padding:40px 20px;color:var(--bl)}
+.nocards .big{font-size:44px;display:block;margin-bottom:10px}
+.nocards h3{font-family:'Playfair Display',serif;font-size:19px;color:var(--br);margin-bottom:6px}
+.nocards p{font-size:12px;margin-bottom:14px}
+.rbtn{background:var(--tr);color:#fff;border:none;padding:9px 22px;border-radius:22px;font-family:'Lato',sans-serif;font-weight:700;font-size:13px;cursor:pointer}
+.rc{position:absolute;width:100%;max-width:330px;background:#FFFDF8;border-radius:20px;box-shadow:0 8px 26px var(--sh);cursor:grab;user-select:none;overflow:hidden;transform-origin:center bottom;will-change:transform}
+.rc:active{cursor:grabbing}
+.rc-top{background:linear-gradient(145deg,#F5D080,#E8845A);padding:26px 18px 16px;text-align:center;position:relative}
+.rc-emoji{font-size:56px;display:block;margin-bottom:6px}
+.rc-badge{position:absolute;top:9px;right:9px;background:rgba(255,255,255,.88);border-radius:9px;padding:3px 7px;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.4px}
+.rc-badge.veg{color:var(--vg)}.rc-badge.non-veg{color:var(--nv)}
+.rc-body{padding:12px 16px 10px}
+.rc-name{font-family:'Playfair Display',serif;font-size:19px;color:var(--br);margin-bottom:5px;line-height:1.2}
+.rc-meta{display:flex;gap:10px;margin-bottom:8px;flex-wrap:wrap}
+.rc-meta span{font-size:11px;color:var(--bl)}
+.bars{display:flex;gap:5px;margin-bottom:10px}
+.bar{flex:1;text-align:center}
+.blbl{font-size:8px;text-transform:uppercase;letter-spacing:.4px;color:var(--bl);margin-bottom:2px;font-weight:700}
+.btrk{height:5px;background:var(--cd);border-radius:3px;overflow:hidden}
+.bfil{height:100%;border-radius:3px}
+.bfil.p{background:#E07B39}.bfil.c{background:#E8B84B}.bfil.v{background:#5A9A6F}.bfil.f{background:#A8C090}
+.rc-tip{background:var(--cd);border-radius:7px;padding:8px 10px;font-size:11px;color:var(--bl);line-height:1.4;border-left:3px solid var(--tu)}
+.rc-tip strong{display:block;font-size:8px;text-transform:uppercase;letter-spacing:.5px;color:var(--tr);margin-bottom:2px}
+.sind{position:absolute;top:14px;padding:5px 12px;border-radius:6px;font-family:'Playfair Display',serif;font-size:18px;font-weight:700;opacity:0;pointer-events:none;z-index:20}
+.sind.like{left:12px;border:3px solid var(--vg);color:var(--vg);transform:rotate(-14deg)}
+.sind.skip{right:12px;border:3px solid var(--nv);color:var(--nv);transform:rotate(14deg)}
+.hint{text-align:center;font-size:10px;color:var(--bl);opacity:.65;margin-bottom:5px}
+.acts{display:flex;justify-content:center;align-items:center;gap:16px;margin-top:12px}
+.abtn{border-radius:50%;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(0,0,0,.13);transition:.1s;flex-shrink:0}
+.abtn:active{transform:scale(.91)}
+.abtn.skip{background:#fff;color:var(--nv);width:50px;height:50px;font-size:19px}
+.abtn.like{background:var(--tr);color:#fff;width:58px;height:58px;font-size:22px}
+.abtn.info{background:#fff;color:var(--tu);width:42px;height:42px;font-size:15px}
+#vRecipe{position:fixed;top:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;height:100vh;background:var(--cr);z-index:500;overflow-y:auto;display:none}
+#vRecipe.on{display:block;animation:su .3s ease}
+@keyframes su{from{transform:translateX(-50%) translateY(100%)}to{transform:translateX(-50%) translateY(0)}}
+.rh{background:linear-gradient(145deg,#F5D080,#E8845A);padding:50px 18px 20px;text-align:center;position:relative}
+.rclose{position:absolute;top:12px;left:12px;background:rgba(255,255,255,.75);border:none;border-radius:50%;width:33px;height:33px;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--br)}
+.rh-emoji{font-size:64px;display:block;margin-bottom:8px}
+.rh h1{font-family:'Playfair Display',serif;font-size:22px;color:var(--br);margin-bottom:5px}
+.rh-meta{display:flex;justify-content:center;gap:14px;font-size:12px;color:var(--bl)}
+.rb{padding:16px 16px 40px}
+.rs{margin-bottom:20px}
+.rs h2{font-family:'Playfair Display',serif;font-size:16px;color:var(--tr);margin-bottom:9px;padding-bottom:4px;border-bottom:2px dashed #F5D080}
+.ilist{list-style:none}
+.iitem{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--cd);font-size:13px}
+.iitem .qty{color:var(--tr);font-weight:700;text-align:right;min-width:70px}
+.slist{list-style:none}
+.sitem{display:flex;gap:9px;margin-bottom:11px;font-size:13px;line-height:1.5}
+.snum{min-width:24px;height:24px;background:var(--tr);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0}
+.tbox{border-radius:10px;padding:12px;border-left:4px solid var(--tu);margin-bottom:10px}
+.tbox.n{background:linear-gradient(135deg,#FFF8E7,#FFF3D0)}
+.tbox.k{background:linear-gradient(135deg,#F0F7F0,#E8F5E8);border-color:#4A7C59}
+.tbox .tlbl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--tr);margin-bottom:2px}
+.tbox.k .tlbl{color:#4A7C59}
+.tbox p{font-size:13px;line-height:1.5}
+.aitem{background:var(--cd);border-radius:8px;padding:8px 10px;font-size:12px;margin-bottom:5px}
+.aitem strong{color:var(--tr);font-size:9px;text-transform:uppercase;letter-spacing:.4px;display:block;margin-bottom:1px}
+.rlike-btn{width:100%;padding:13px;background:var(--tr);color:#fff;border:none;border-radius:12px;font-family:'Lato',sans-serif;font-weight:700;font-size:15px;cursor:pointer;margin-top:8px}
+#vLiked{padding:16px 14px 88px}
+#vPlate{padding:16px 14px 88px}
+.shdr{text-align:center;margin-bottom:16px}
+.shdr h2{font-family:'Playfair Display',serif;font-size:21px;color:var(--br)}
+.shdr p{font-size:12px;color:var(--bl);margin-top:2px}
+.lempty{text-align:center;padding:50px 20px;color:var(--bl)}
+.lempty .big{font-size:44px;display:block;margin-bottom:10px}
+.llist{display:flex;flex-direction:column;gap:9px}
+.litem{background:#FFFDF8;border-radius:13px;padding:11px 13px;box-shadow:0 2px 8px var(--sh);display:flex;align-items:center;gap:11px;cursor:pointer;transition:.1s}
+.litem:active{transform:scale(.98)}
+.litem-e{font-size:32px;flex-shrink:0}
+.litem-info{flex:1}
+.litem-name{font-family:'Playfair Display',serif;font-size:14px;color:var(--br);margin-bottom:2px}
+.litem-meta{font-size:10px;color:var(--bl);display:flex;gap:7px}
+.litem-rm{background:none;border:none;font-size:15px;cursor:pointer;color:var(--bl);opacity:.4;padding:4px}
+.plate-wrap{display:flex;justify-content:center;margin-bottom:16px}
+.pleg{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:14px}
+.pleg-item{display:flex;align-items:center;gap:8px;background:#FFFDF8;border-radius:10px;padding:9px 11px;box-shadow:0 2px 8px var(--sh)}
+.pleg-dot{width:13px;height:13px;border-radius:50%;flex-shrink:0}
+.pleg-lbl{font-size:10px;text-transform:uppercase;letter-spacing:.4px;font-weight:700;color:var(--bl)}
+.pleg-val{font-family:'Playfair Display',serif;font-size:16px;color:var(--br);line-height:1}
+.pfb{background:#FFFDF8;border-radius:13px;padding:13px;box-shadow:0 2px 8px var(--sh);text-align:center;margin-bottom:12px}
+.pfb .fe{font-size:26px;margin-bottom:4px}
+.pfb h3{font-family:'Playfair Display',serif;font-size:16px;margin-bottom:4px;color:var(--br)}
+.pfb p{font-size:12px;color:var(--bl);line-height:1.5}
+.pchips{display:flex;flex-wrap:wrap;gap:6px}
+.pchip{background:var(--cd);border-radius:16px;padding:5px 10px;font-size:11px}
+.bnav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;background:#fff;display:flex;box-shadow:0 -3px 14px rgba(61,43,31,.1);z-index:100}
+.nbtn{flex:1;padding:9px 6px 13px;border:none;background:transparent;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;position:relative}
+.nicon{font-size:19px}.nlbl{font-size:9px;font-family:'Lato',sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:var(--bl)}
+.nbtn.on .nlbl{color:var(--tr)}
+.lbadge{position:absolute;top:4px;right:10px;background:var(--tr);color:#fff;border-radius:8px;font-size:8px;font-weight:700;min-width:15px;height:15px;display:flex;align-items:center;justify-content:center;padding:0 3px}
+.fov{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:298;display:none}.fov.on{display:block}
+#vF{position:fixed;bottom:0;left:50%;transform:translateX(-50%) translateY(100%);width:100%;max-width:430px;background:var(--cr);border-radius:20px 20px 0 0;padding:14px 16px 28px;z-index:299;max-height:70vh;overflow-y:auto;transition:transform .3s ease}
+#vF.on{transform:translateX(-50%) translateY(0)}
+.fhand{width:36px;height:4px;background:var(--cd);border-radius:2px;margin:0 auto 14px}
+.ftitle{font-family:'Playfair Display',serif;font-size:17px;color:var(--br);margin-bottom:2px}
+.fsub{font-size:12px;color:var(--bl);margin-bottom:14px}
+.fgrp{margin-bottom:14px}
+.fgrp h3{font-size:10px;text-transform:uppercase;letter-spacing:.8px;color:var(--bl);font-weight:700;margin-bottom:7px}
+.fchips{display:flex;flex-wrap:wrap;gap:6px}
+.fchip{padding:5px 11px;border-radius:16px;border:2px solid var(--cd);background:#fff;font-size:12px;cursor:pointer;font-family:'Lato',sans-serif;color:var(--br);transition:.15s}
+.fchip.on{background:var(--tr);border-color:var(--tr);color:#fff}
+.fapply{width:100%;padding:12px;background:var(--tr);color:#fff;border:none;border-radius:11px;font-family:'Lato',sans-serif;font-weight:700;font-size:14px;cursor:pointer;margin-top:4px}
+.toast{position:fixed;bottom:74px;left:50%;transform:translateX(-50%) translateY(14px);background:var(--br);color:#fff;padding:8px 18px;border-radius:20px;font-size:12px;font-weight:700;opacity:0;transition:all .3s;z-index:600;white-space:nowrap}
+.toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+</style>
+</head>
+<body>
+<header class="hdr">
+  <div class="htitle">Khaane Mein Kya Hai?<span>Healthy meals for little ones 🌿</span></div>
+  <div style="display:flex;align-items:center">
+    <div class="dtog">
+      <button class="dbtn on" data-d="all">All</button>
+      <button class="dbtn" data-d="veg">🟢</button>
+      <button class="dbtn" data-d="non-veg">🔴</button>
+    </div>
+    <button class="fbtn" id="openF">⚙️</button>
+  </div>
+</header>
+<div class="tabs">
+  <button class="tab on" data-t="dinner">🌙 Dinner</button>
+  <button class="tab" data-t="tiffin">🎒 Tiffin</button>
+  <button class="tab" data-t="snack">🫙 Snack</button>
+  <button class="tab" data-t="breakfast">☀️ Breakfast</button>
+</div>
+<div id="vCards" class="view on">
+  <div class="card-area" id="cardArea"></div>
+  <p class="hint">Tap card for full recipe · Swipe or use buttons</p>
+  <div class="acts">
+    <button class="abtn skip" id="btnSkip">✕</button>
+    <button class="abtn info" id="btnInfo">📋</button>
+    <button class="abtn like" id="btnLike">♥</button>
+  </div>
+</div>
+<div id="vLiked" class="view">
+  <div class="shdr"><h2>Liked Meals ❤️</h2><p>Tap any meal to view full recipe</p></div>
+  <div id="likedList"></div>
+</div>
+<div id="vPlate" class="view">
+  <div class="shdr"><h2>My Balance Plate 🍽️</h2><p>Based on your liked meals</p></div>
+  <div class="plate-wrap" id="plateSvg"></div>
+  <div class="pleg" id="plateLeg"></div>
+  <div class="pfb" id="plateFB"></div>
+  <div class="pchips" id="plateChips"></div>
+</div>
+<nav class="bnav">
+  <button class="nbtn on" data-nav="Cards"><span class="nicon">🃏</span><span class="nlbl">Discover</span></button>
+  <button class="nbtn" data-nav="Liked"><span class="nicon">❤️</span><span class="nlbl">Liked</span><span class="lbadge" id="lbadge" style="display:none">0</span></button>
+  <button class="nbtn" data-nav="Plate"><span class="nicon">🍽️</span><span class="nlbl">My Plate</span></button>
+</nav>
+<div id="vRecipe"><div id="rContent"></div></div>
+<div class="fov" id="fov"></div>
+<div id="vF">
+  <div class="fhand"></div>
+  <div class="ftitle">Filter Recipes</div>
+  <div class="fsub">Exclude what your child can't or won't eat</div>
+  <div class="fgrp"><h3>🚫 Allergens</h3><div class="fchips" id="fAl"></div></div>
+  <div class="fgrp"><h3>🙅 Skip Ingredients</h3><div class="fchips" id="fIng"></div></div>
+  <button class="fapply" id="applyF">Apply Filters ✓</button>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const R=[
+{id:'r01',n:'Ragi Idli',e:'🫓',cat:['breakfast','tiffin','dinner'],diet:'veg',t:'20 mins',s:3,al:[],ex:['ragi'],pf:{p:20,c:50,v:10,f:5},ing:[['Amma\'s Ragi Idli/Dosa batter','2 cups'],['Oil (for moulds)','1 tsp'],['Salt','to taste']],steps:['Bring batter to room temperature and stir well.','Grease idli moulds lightly with oil.','Pour batter into moulds and steam 12–15 mins.','Test with toothpick — should come out clean.','Serve hot with coconut chutney or sambar.'],tip:'Ragi has more calcium than milk gram-for-gram — brilliant for growing bones.',kid:'Let your child unmould the idlis — it\'s like a little science reveal.',alt:{dairyFree:'Already dairy-free!',eggFree:'Already egg-free!',glutenFree:'Ragi is naturally gluten-free.'}},
+{id:'r02',n:'Paneer Parantha',e:'🫔',cat:['breakfast','tiffin','dinner'],diet:'veg',t:'25 mins',s:3,al:['gluten','dairy'],ex:['paneer'],pf:{p:25,c:45,v:15,f:20},ing:[['Multigrain atta','1.5 cups'],['Paneer (crumbled)','100g'],['Onion (chopped)','1 small'],['Coriander leaves','handful'],['Ghee','1 tsp/parantha'],['Salt','to taste']],steps:['Knead atta with water into soft dough. Rest 15 mins.','Mix paneer, onion, coriander, cumin and salt for filling.','Roll a dough ball, stuff filling, seal and roll flat.','Cook on hot tawa with ghee on both sides until golden.'],tip:'Paneer is a complete protein — one of the best for vegetarian kids.',kid:'Kids love stuffing and folding the parantha — give them their own mini dough ball.',alt:{dairyFree:'Use firm tofu',eggFree:'Already egg-free!',glutenFree:'Try jowar flour'}},
+{id:'r03',n:'Palak Paneer Muffins',e:'🧁',cat:['snack','tiffin','breakfast'],diet:'veg',t:'30 mins',s:4,al:['gluten','dairy','egg'],ex:['spinach','paneer'],pf:{p:25,c:30,v:35,f:15},ing:[['Oat flour','1.5 cups'],['Paneer (crumbled)','100g'],['Spinach (blanched)','1 cup'],['Eggs','2'],['Olive oil','3 tbsp'],['Milk','½ cup'],['Baking powder','1 tsp'],['Salt','to taste']],steps:['Preheat oven to 180°C. Grease a muffin tin.','Whisk eggs, olive oil and milk together.','Fold in oat flour, baking powder, salt and cumin.','Stir in spinach and crumbled paneer.','Bake 20–22 mins until golden.','Cool 5 mins before unmoulding.'],tip:'Spinach + paneer = iron and calcium together — a great growing-kid combo.',kid:'Call them "Hulk Muffins" and watch them disappear.',alt:{dairyFree:'Use tofu and oat milk',eggFree:'Use 2 flax eggs',glutenFree:'Use certified GF oat flour'}},
+{id:'r04',n:"'Not Butter' Chicken",e:'🍗',cat:['dinner'],diet:'non-veg',t:'35 mins',s:4,al:['dairy','nuts'],ex:['chicken'],pf:{p:55,c:10,v:25,f:15},ing:[['Chicken (boneless, cubed)','400g'],['Tomatoes (pureed)','3 large'],['Onion','1 large'],['Cashew paste','3 tbsp'],['Thick yogurt','3 tbsp'],['Ginger-garlic paste','2 tsp'],['Kashmiri chilli, garam masala, butter','to taste']],steps:['Marinate chicken in yogurt, ginger-garlic and spices 20 mins.','Sauté onions in 1 tsp butter until golden. Add tomato puree.','Stir in cashew paste and remaining spices. Cook 3 mins.','Add marinated chicken, cover and cook 15 mins on medium.','Finish with a tiny dollop of butter and coriander.'],tip:'Cashew paste gives the creamy texture without heavy cream — healthy fats included.',kid:'The bright colour and mild sweetness wins over even fussy eaters.',alt:{dairyFree:'Use coconut cream',eggFree:'Already egg-free!',nutFree:'Use sunflower seed paste'}},
+{id:'r05',n:'Sprouts Chaat Salad',e:'🥗',cat:['snack','lunch'],diet:'veg',t:'10 mins',s:2,al:[],ex:['sprouts','onion'],pf:{p:35,c:20,v:55,f:5},ing:[['Mixed sprouts (steamed)','1.5 cups'],['Tomato (chopped)','1 medium'],['Onion (chopped)','½ small'],['Cucumber (chopped)','½ medium'],['Lemon juice','1 tbsp'],['Chaat masala','½ tsp'],['Coriander, salt','to taste']],steps:['Steam the sprouts 5–6 mins until just tender.','Let cool to room temperature.','Mix all chopped vegetables with sprouts.','Add lemon juice, chaat masala and salt. Toss well.','Garnish with coriander. Serve immediately.'],tip:'Sprouting multiplies protein and vitamin content of legumes — incredible nutrition for zero effort.',kid:'Let children assemble their own bowl — self-built food always tastes better.',alt:{dairyFree:'Already dairy-free!',eggFree:'Already egg-free!',glutenFree:'Already gluten-free!'}},
+{id:'r06',n:'3-Colour Puris',e:'🔴🟢⚪',cat:['breakfast','tiffin','snack'],diet:'veg',t:'30 mins',s:4,al:['gluten'],ex:['beetroot','spinach'],pf:{p:10,c:55,v:25,f:15},ing:[['Whole wheat atta','2 cups'],['Beetroot puree','3 tbsp'],['Spinach puree','3 tbsp'],['Salt, oil','to taste']],steps:['Divide atta into 3 equal portions.','Knead one with beetroot (pink), one with spinach (green), one plain.','Rest all doughs 10 mins.','Roll small puris and air fry at 180°C for 8–10 mins.','Serve together — the colours are the show.'],tip:'Beetroot adds folate and spinach adds iron — hidden vegetables, zero complaint.',kid:'Kids eat the pink one first every single time.',alt:{dairyFree:'Already dairy-free!',eggFree:'Already egg-free!',glutenFree:'Try jowar flour'}},
+{id:'r07',n:'Air Fryer Chicken Drumsticks',e:'🍖',cat:['dinner','snack'],diet:'non-veg',t:'30 mins',s:3,al:['dairy'],ex:['chicken'],pf:{p:65,c:5,v:5,f:20},ing:[['Chicken drumsticks','6 pieces'],['Thick yogurt','4 tbsp'],['Ginger-garlic paste','2 tsp'],['Lemon juice','1 tbsp'],['Kashmiri chilli, cumin, coriander','1 tsp each'],['Olive oil, salt','to taste']],steps:['Score drumsticks so marinade penetrates.','Mix yogurt, spices, oil and lemon into marinade.','Coat drumsticks well and marinate at least 1 hour.','Air fry at 200°C for 22–25 mins, flipping halfway.','Serve with mint chutney and sliced onions.'],tip:'Air frying cuts fat by up to 75% vs deep frying while keeping the crunch.',kid:'Drumsticks are finger food — no cutlery, no fuss, maximum excitement.',alt:{dairyFree:'Use coconut yogurt',eggFree:'Already egg-free!',glutenFree:'Already gluten-free!'}},
+{id:'r08',n:'Banana Oat Pancakes',e:'🥞',cat:['breakfast','snack'],diet:'veg',t:'20 mins',s:2,al:['gluten','egg'],ex:['banana'],pf:{p:20,c:45,v:10,f:10},ing:[['Oat flour','1 cup'],['Ripe banana','1 large'],['Eggs','2'],['Milk or oat milk','¼ cup'],['Cinnamon','½ tsp'],['Coconut oil','1 tsp']],steps:['Mash banana thoroughly in a bowl.','Beat in eggs and milk until smooth.','Fold in oat flour and cinnamon — don\'t overmix.','Heat a non-stick pan, add a few drops of coconut oil.','Pour small rounds and cook 2 mins each side until golden.'],tip:'The banana replaces all added sugar while adding potassium and natural energy.',kid:'Let your child mash the banana — they will always eat what they helped make.',alt:{dairyFree:'Use oat milk',eggFree:'Use 2 flax eggs',glutenFree:'Use certified GF oats'}},
+{id:'r09',n:'Pesto Pasta with Broccoli & Beans',e:'🍝',cat:['dinner','lunch'],diet:'veg',t:'25 mins',s:3,al:['gluten','nuts'],ex:['broccoli','nuts'],pf:{p:15,c:40,v:35,f:20},ing:[['Whole wheat pasta','200g'],['Broccoli florets','1 cup'],['French beans (trimmed)','½ cup'],['Fresh basil + spinach','½ cup each'],['Walnuts or cashews','3 tbsp'],['Olive oil, garlic, lemon, salt','to taste']],steps:['Blend basil, spinach, nuts, garlic, olive oil, lemon and salt into pesto.','Cook pasta, reserve ½ cup pasta water before draining.','Blanch broccoli and beans 3 mins.','Toss hot pasta with pesto and a splash of pasta water.','Add vegetables, toss gently and serve immediately.'],tip:'Spinach in the pesto adds iron invisibly. No parmesan needed — it\'s complete.',kid:'Call it "jungle pasta" — the bright green colour sparks instant curiosity.',alt:{dairyFree:'Already dairy-free!',eggFree:'Already egg-free!',nutFree:'Use sunflower seeds'}},
+{id:'r10',n:'Broccoli & Chicken Stir Fry',e:'🥦',cat:['dinner'],diet:'non-veg',t:'20 mins',s:3,al:['soy'],ex:['broccoli'],pf:{p:50,c:10,v:40,f:15},ing:[['Chicken breast (thin sliced)','300g'],['Broccoli florets','2 cups'],['Garlic, ginger','3 cloves, 1 inch'],['Low-sodium soy sauce','2 tbsp'],['Sesame oil','1 tsp'],['Olive oil, pepper','to taste']],steps:['Marinate chicken in soy sauce and pepper 10 mins.','Heat oil in wok on high heat.','Stir fry garlic and ginger 30 secs until fragrant.','Add chicken, cook on high heat 4–5 mins.','Add broccoli, toss on high heat 3 mins — keep it bright green.','Finish with sesame oil. Serve over rice.'],tip:'High-heat stir frying for a short time preserves more nutrients than boiling.',kid:'Broccoli looks like tiny trees — a plate of crunchy forests.',alt:{dairyFree:'Already dairy-free!',eggFree:'Already egg-free!',glutenFree:'Use tamari instead of soy'}},
+{id:'r11',n:'Chicken Fried Rice',e:'🍳',cat:['dinner','lunch'],diet:'non-veg',t:'25 mins',s:3,al:['egg','soy'],ex:['chicken'],pf:{p:30,c:45,v:20,f:15},ing:[['Cooked rice (day-old)','2 cups'],['Chicken (cooked, shredded)','150g'],['Eggs','2'],['Carrot + peas','½ cup each'],['Spring onion','2 stalks'],['Soy sauce, sesame oil','2 tbsp, 1 tsp']],steps:['Heat oil in wok. Scramble eggs and set aside.','Stir fry garlic-ginger, then carrots and peas 3 mins.','Add shredded chicken, toss on high heat.','Add rice breaking clumps — stir fry 3–4 mins.','Add soy sauce and scrambled eggs. Toss.','Finish with spring onions and sesame oil.'],tip:'Day-old rice has a lower glycaemic index than freshly cooked rice.',kid:'Fried rice uses up fridge leftovers. Kids love spotting ingredients as you cook.',alt:{dairyFree:'Already dairy-free!',glutenFree:'Use tamari',eggFree:'Skip egg, add more chicken'}},
+{id:'r12',n:'Veggie Fried Rice',e:'🍚',cat:['dinner','lunch','tiffin'],diet:'veg',t:'20 mins',s:3,al:['soy'],ex:[],pf:{p:15,c:50,v:35,f:10},ing:[['Cooked rice (day-old)','2 cups'],['Mixed vegetables (carrot, peas, corn, capsicum)','1.5 cups'],['Spring onion','2 stalks'],['Soy sauce, sesame oil','2 tbsp, 1 tsp'],['Garlic (minced)','2 cloves']],steps:['Heat oil in wok. Stir fry garlic, then add all vegetables.','Cook on high heat 3–4 mins, keeping vegetables crunchy.','Add rice, break clumps. Toss on high heat.','Add soy sauce. Toss well.','Finish with sesame oil and spring onions.'],tip:'Use as many vegetables as possible — the rice is just the canvas.',kid:'Let kids pick 3 vegetables to go in. They always eat what they chose.',alt:{dairyFree:'Already dairy-free!',eggFree:'Already egg-free!',glutenFree:'Use tamari'}},
+{id:'r13',n:'Moong Dal Cheela',e:'🫓',cat:['breakfast','snack','tiffin'],diet:'veg',t:'20 mins',s:3,al:[],ex:[],pf:{p:35,c:35,v:20,f:10},ing:[['Split moong dal (soaked 4 hrs)','1 cup'],['Ginger','½ inch'],['Onion (chopped)','¼ cup'],['Spinach or grated carrot','handful'],['Cumin seeds, salt','to taste'],['Oil','1 tsp per cheela']],steps:['Blend soaked dal and ginger with minimal water into thick batter.','Stir in onion, spinach/carrot, cumin and salt.','Heat non-stick tawa, pour a ladle and spread in a circle.','Drizzle oil on edges. Cook 2–3 mins until golden underneath.','Flip and cook 1 more minute. Serve with green chutney.'],tip:'Moong dal is one of the easiest proteins to digest — perfect for young children.',kid:'Add a small piece of cheese on top for the ultimate kid-approved upgrade.',alt:{dairyFree:'Already dairy-free!',eggFree:'Already egg-free!',glutenFree:'Already gluten-free!'}},
+{id:'r14',n:'Vegetable Poha',e:'🍽️',cat:['breakfast','tiffin'],diet:'veg',t:'15 mins',s:2,al:[],ex:[],pf:{p:10,c:55,v:30,f:10},ing:[['Thick poha (flattened rice)','1.5 cups'],['Onion, potato, peas','1 small each + ¼ cup'],['Mustard seeds, curry leaves','½ tsp, 6–8'],['Turmeric, lemon juice, oil, salt','to taste']],steps:['Rinse poha in colander and let soften 5 mins. Don\'t soak.','Heat oil. Add mustard seeds and curry leaves — let splutter.','Add onion and potato. Cook until softened.','Add peas and turmeric. Stir 2 mins.','Add softened poha and salt. Toss gently. Finish with lemon.'],tip:'Adding peas boosts the protein significantly in this dish.',kid:'Light, not too filling, ready in 15 minutes. A reliable morning winner.',alt:{dairyFree:'Already dairy-free!',eggFree:'Already egg-free!',glutenFree:'Already gluten-free!'}},
+{id:'r15',n:'Oats Upma',e:'🥣',cat:['breakfast','tiffin'],diet:'veg',t:'15 mins',s:2,al:['gluten'],ex:[],pf:{p:15,c:45,v:35,f:10},ing:[['Rolled oats','1 cup'],['Onion + mixed vegetables','1 small + ½ cup'],['Mustard seeds, curry leaves, ginger','½ tsp, 6, ½ inch'],['Water, oil, salt, lemon','2 cups, 1 tsp, to taste']],steps:['Dry roast oats 2–3 mins until lightly toasted. Set aside.','Heat oil. Add mustard seeds, curry leaves and ginger.','Add onion and vegetables. Sauté 3–4 mins.','Pour in water and bring to boil. Add salt.','Add roasted oats, stir continuously until water is absorbed.','Finish with lemon juice and coriander.'],tip:'Oats are among the best sources of beta-glucan, supporting immunity.',kid:'Familiar upma flavours — most kids can\'t tell it\'s not rava upma.',alt:{dairyFree:'Already dairy-free!',eggFree:'Already egg-free!',glutenFree:'Use certified GF oats'}},
+{id:'r16',n:'Methi Thepla',e:'🫓',cat:['tiffin','breakfast'],diet:'veg',t:'25 mins',s:3,al:['gluten','dairy'],ex:['fenugreek'],pf:{p:15,c:50,v:25,f:15},ing:[['Multigrain atta','1.5 cups'],['Fresh methi (chopped)','1 cup packed'],['Yogurt','3 tbsp'],['Turmeric, cumin, chilli, oil, salt','to taste']],steps:['Combine flour, methi, yogurt, spices and salt.','Knead into smooth dough, adding water as needed.','Roll into small thin rounds.','Cook on hot tawa with a little oil on both sides.','Pack for tiffin — stays soft for hours.'],tip:'Methi (fenugreek) is exceptional for iron, supporting focus in school-going children.',kid:'Serve with mild pickle or yogurt — a slight bitterness kids grow to love.',alt:{dairyFree:'Use coconut yogurt',eggFree:'Already egg-free!',glutenFree:'Try bajra flour'}},
+{id:'r17',n:'Besan Chilla',e:'🥙',cat:['breakfast','snack','tiffin'],diet:'veg',t:'15 mins',s:2,al:[],ex:[],pf:{p:35,c:30,v:25,f:10},ing:[['Besan (chickpea flour)','1 cup'],['Onion, tomato, coriander','¼ cup each'],['Cumin, turmeric, salt','to taste'],['Water','¾ cup'],['Oil','1 tsp per chilla']],steps:['Mix besan, onion, tomato, coriander, cumin, turmeric and salt.','Add water gradually to make smooth pourable batter.','Heat non-stick tawa, pour ladle and spread thin.','Drizzle oil on edges. Cook 2–3 mins until set.','Flip and cook 1 min more. Serve with chutney.'],tip:'Besan has nearly twice the protein of wheat flour — an underrated powerhouse.',kid:'Add grated cheese on top for an irresistible upgrade.',alt:{dairyFree:'Already dairy-free!',eggFree:'Already egg-free!',glutenFree:'Besan is naturally gluten-free!'}},
+{id:'r18',n:'Vegetable Daliya',e:'🥣',cat:['breakfast','dinner'],diet:'veg',t:'25 mins',s:2,al:['gluten'],ex:[],pf:{p:10,c:50,v:35,f:5},ing:[['Broken wheat (daliya)','½ cup'],['Mixed vegetables','1 cup'],['Onion, tomato','1 small each'],['Cumin, turmeric, salt, oil/ghee','to taste'],['Water','2.5 cups']],steps:['Dry roast daliya until light golden.','Heat ghee, add cumin. Sauté onion, tomato 3 mins.','Add vegetables and turmeric. Stir 2 mins.','Add daliya and water. Cover and cook 15–18 mins.','Season with salt and serve warm.'],tip:'Broken wheat is digested slowly — excellent sustained energy for a school day.',kid:'A mild, gentle flavour easy on young stomachs. Great as an early dinner.',alt:{dairyFree:'Use oil instead of ghee',eggFree:'Already egg-free!',glutenFree:'Substitute with foxtail millet'}},
+{id:'r19',n:'Masala Omelette',e:'🍳',cat:['breakfast','snack'],diet:'non-veg',t:'10 mins',s:1,al:['egg'],ex:['egg'],pf:{p:45,c:5,v:30,f:20},ing:[['Eggs','2–3'],['Onion, tomato, coriander','2 tbsp each'],['Turmeric, salt, pepper, oil','to taste']],steps:['Beat eggs with salt, pepper and turmeric.','Stir in onion, tomato and coriander.','Heat ½ tsp oil in non-stick pan.','Pour egg mixture and let set 2 mins without stirring.','Fold over and cook 1 more min.'],tip:'Eggs are one of very few complete protein sources — all essential amino acids.',kid:'Let kids crack the eggs. Every child loves cracking eggs.',alt:{dairyFree:'Already dairy-free!',glutenFree:'Already gluten-free!',eggFree:'Try moong dal cheela instead'}},
+{id:'r20',n:'Egg Bhurji Wrap',e:'🌯',cat:['tiffin','breakfast','snack'],diet:'non-veg',t:'15 mins',s:2,al:['egg','gluten'],ex:['egg'],pf:{p:35,c:40,v:20,f:15},ing:[['Eggs','3'],['Onion, tomato, capsicum','1 small each'],['Whole wheat roti or wrap','2'],['Cumin, turmeric, chilli, oil','to taste']],steps:['Heat oil. Sauté onion until translucent.','Add tomato and capsicum, cook 2 mins. Add spices.','Beat eggs lightly and pour over vegetables.','Scramble together until cooked.','Place filling in warm roti and roll tightly.'],tip:'A wrap makes high-protein eggs exciting and portable — perfect tiffin format.',kid:'It looks like a restaurant wrap. Kids love anything that looks grown-up.',alt:{dairyFree:'Already dairy-free!',glutenFree:'Use rice flour roti',eggFree:'Substitute scrambled tofu with same spices'}},
+{id:'r21',n:'Dal Tadka with Rice',e:'🍛',cat:['dinner','lunch'],diet:'veg',t:'30 mins',s:4,al:[],ex:[],pf:{p:25,c:50,v:15,f:10},ing:[['Toor or moong dal','¾ cup'],['Tomato, onion, garlic','1 large, 1 small, 3 cloves'],['Turmeric, cumin, coriander, ghee','½ tsp each, 1 tsp'],['Cooked rice','1.5 cups per person']],steps:['Pressure cook dal with tomato, turmeric and salt until soft.','Mash gently — dal should be smooth but not fully pureed.','Heat ghee. Add cumin, then garlic and onion until golden.','Add spice powders, stir 30 secs. Pour tadka over dal.','Serve with rice.'],tip:'Dal-rice together form a complete protein — the two complement each other\'s amino acids perfectly.',kid:'The ultimate Indian comfort food. If nothing else works — dal chawal always does.',alt:{dairyFree:'Use oil instead of ghee',eggFree:'Already egg-free!',glutenFree:'Already gluten-free!'}},
+{id:'r22',n:'Rajma Chawal',e:'🫘',cat:['dinner','lunch'],diet:'veg',t:'40 mins',s:4,al:[],ex:['kidney beans'],pf:{p:30,c:50,v:15,f:5},ing:[['Rajma (soaked overnight)','1 cup'],['Onion, tomatoes (pureed)','1 large, 2'],['Ginger-garlic paste','2 tsp'],['Cumin, coriander, garam masala, oil','1 tsp each'],['Cooked rice','per person']],steps:['Pressure cook soaked rajma until completely soft.','Sauté onion until dark golden. Add ginger-garlic.','Add tomato puree and spices. Cook 10 mins until thick.','Add rajma with 1 cup cooking water. Simmer 15 mins.','Serve with plain rice.'],tip:'Kidney beans are one of the richest plant sources of protein and iron.',kid:'The thick stew-like gravy is deeply satisfying. An easy dinner win.',alt:{dairyFree:'Already dairy-free!',eggFree:'Already egg-free!',glutenFree:'Already gluten-free!'}},
+{id:'r23',n:'Aloo Gobi',e:'🥦',cat:['dinner','lunch'],diet:'veg',t:'25 mins',s:3,al:[],ex:['cauliflower'],pf:{p:5,c:40,v:55,f:10},ing:[['Cauliflower florets','2 cups'],['Potato (cubed)','1 medium'],['Onion, tomato, ginger-garlic','1 small, 1 medium, 1 tsp'],['Turmeric, cumin, coriander, chilli, oil','to taste']],steps:['Heat oil, add cumin seeds. Sauté onion until golden.','Add ginger-garlic and tomatoes. Cook until oil separates.','Add spice powders and stir.','Add potato and cauliflower, mix to coat.','Cover and cook on low heat 15 mins. Garnish with coriander.'],tip:'Cauliflower is rich in choline, which supports brain development in children.',kid:'A classic. Pair with hot roti straight off the tawa.',alt:{dairyFree:'Already dairy-free!',eggFree:'Already egg-free!',glutenFree:'Already gluten-free!'}},
+{id:'r24',n:'Palak Dal',e:'🍵',cat:['dinner','lunch'],diet:'veg',t:'25 mins',s:3,al:[],ex:['spinach'],pf:{p:30,c:25,v:40,f:5},ing:[['Moong or masoor dal','¾ cup'],['Spinach (chopped)','2 cups packed'],['Tomato, onion, garlic','1 each'],['Turmeric, cumin, oil or ghee','to taste']],steps:['Cook dal with turmeric until soft. Add spinach in last 5 mins.','Mash together gently.','Heat ghee with cumin. Add garlic, onion, tomato and spices.','Cook 5 mins and pour over dal. Simmer 5 more mins.','Serve with roti or rice.'],tip:'Iron from spinach is better absorbed with lemon — add a squeeze at the table.',kid:'Frame it as "power dal" — the green colour is actually intriguing to some children.',alt:{dairyFree:'Use oil instead of ghee',eggFree:'Already egg-free!',glutenFree:'Already gluten-free!'}},
+{id:'r25',n:'Egg Curry',e:'🥚',cat:['dinner'],diet:'non-veg',t:'25 mins',s:3,al:['egg'],ex:['egg'],pf:{p:40,c:10,v:35,f:20},ing:[['Eggs (hard boiled)','4'],['Onion, tomatoes (pureed)','1 large, 2'],['Ginger-garlic paste, oil','2 tsp, 1 tbsp'],['Turmeric, cumin, coriander, garam masala','to taste']],steps:['Score or halve hard boiled eggs. Shallow fry briefly (optional).','Sauté onion until deep golden. Add ginger-garlic.','Add tomato puree and spices. Cook until thick.','Add 1 cup water, bring to simmer. Add eggs.','Simmer 8 mins gently. Serve with rice or roti.'],tip:'Eggs in curry absorb lycopene from tomatoes — a win-win nutritional combination.',kid:'Halved eggs look like little suns in the gravy. Mild and universally acceptable.',alt:{dairyFree:'Already dairy-free!',glutenFree:'Already gluten-free!',eggFree:'Try paneer curry instead'}},
+{id:'r26',n:'Millet Khichdi',e:'🥘',cat:['dinner','lunch'],diet:'veg',t:'30 mins',s:3,al:[],ex:[],pf:{p:20,c:45,v:25,f:10},ing:[['Foxtail millet or bajra','½ cup'],['Split moong dal','¼ cup'],['Mixed vegetables','1 cup'],['Turmeric, cumin, ginger, ghee, salt','to taste'],['Water','3 cups']],steps:['Wash millet and moong dal together.','Heat ghee in pressure cooker. Add cumin and ginger.','Add vegetables, sauté 2 mins.','Add millet, dal, turmeric, salt and water.','Pressure cook 3 whistles. Mash gently and serve with ghee.'],tip:'Millets have a much lower glycaemic index than rice — great for steady afternoon energy.',kid:'Soft and gentle texture. Very easy for young children. A great sick-day meal too.',alt:{dairyFree:'Use oil instead of ghee',eggFree:'Already egg-free!',glutenFree:'Already gluten-free!'}},
+{id:'r27',n:'Pasta Arrabiata',e:'🍝',cat:['dinner'],diet:'veg',t:'25 mins',s:3,al:['gluten'],ex:[],pf:{p:10,c:55,v:30,f:10},ing:[['Whole wheat pasta','200g'],['Tomatoes (chopped or canned)','3 large / 1 tin'],['Garlic (sliced), olive oil','4 cloves, 2 tbsp'],['Red chilli flakes (mild)','¼ tsp'],['Fresh basil, salt','to taste']],steps:['Cook pasta. Reserve some pasta water before draining.','Heat olive oil. Add garlic and chilli flakes on medium.','Once garlic is golden, add tomatoes.','Cook sauce 15 mins until thick and rich.','Toss with pasta, adding pasta water to loosen. Top with basil.'],tip:'Cooking tomatoes in olive oil dramatically increases lycopene bioavailability.',kid:'The simple tomato version kids will ask for again and again.',alt:{dairyFree:'Already dairy-free!',eggFree:'Already egg-free!',glutenFree:'Use rice or chickpea pasta'}},
+{id:'r28',n:'Baked Fish with Herbs',e:'🐟',cat:['dinner'],diet:'non-veg',t:'25 mins',s:3,al:['fish'],ex:['fish'],pf:{p:65,c:5,v:15,f:20},ing:[['Fish fillets (surmai, rawas or basa)','400g'],['Lemon juice, olive oil','2 tbsp each'],['Garlic (minced), mixed herbs','2 cloves, 1 tsp'],['Salt and pepper','to taste']],steps:['Preheat oven to 200°C.','Mix olive oil, lemon, garlic, herbs, salt and pepper.','Coat fish fillets and place on a lined baking tray.','Bake 15–18 mins until fish flakes easily with a fork.','Serve with steamed vegetables and rice.'],tip:"Fish is the single best source of DHA omega-3, supporting children's brain development.",kid:'Mild white fish like basa has almost no fishy taste — a gentle entry for fish-wary kids.',alt:{dairyFree:'Already dairy-free!',eggFree:'Already egg-free!',glutenFree:'Already gluten-free!'}},
+{id:'r29',n:'Chicken & Vegetable Soup',e:'🍲',cat:['dinner','snack'],diet:'non-veg',t:'30 mins',s:4,al:[],ex:['chicken'],pf:{p:40,c:15,v:45,f:5},ing:[['Chicken (bone-in pieces)','300g'],['Carrot, celery, onion','1 large, 2 stalks, 1'],['Garlic, bay leaf, peppercorns','3, 1, 5'],['Water, salt','6 cups, to taste']],steps:['Add all ingredients to a pot and bring to boil.','Reduce heat and simmer 25–30 mins.','Remove chicken, shred it and return to pot.','Adjust salt. Serve hot with whole wheat bread.'],tip:'Homemade bone broth is rich in collagen and minerals — the original restorative food.',kid:'Warm and deeply comforting. The go-to on sick days and rainy evenings.',alt:{dairyFree:'Already dairy-free!',eggFree:'Already egg-free!',glutenFree:'Already gluten-free!'}},
+{id:'r30',n:'Veggie Noodle Stir Fry',e:'🍜',cat:['dinner','tiffin'],diet:'veg',t:'20 mins',s:3,al:['gluten','soy'],ex:[],pf:{p:10,c:50,v:40,f:10},ing:[['Noodles (whole wheat or rice)','200g'],['Carrot, capsicum, cabbage','1 medium, 1, 1 cup'],['Spring onion, garlic, ginger','2 stalks, 1 tsp each'],['Soy sauce, sesame oil','2 tbsp, 1 tsp']],steps:['Cook noodles slightly underdone. Drain and toss with a drop of oil.','Heat oil in wok. Add garlic and ginger.','Add carrot and cabbage first, stir fry 2–3 mins.','Add capsicum and spring onion, toss 1 min.','Add noodles and soy sauce. Toss on high heat. Finish with sesame oil.'],tip:'Stir frying on high heat for a short time preserves more vitamins than slow cooking.',kid:'Noodles are universally loved. The sesame oil makes this smell like a restaurant.',alt:{dairyFree:'Already dairy-free!',eggFree:'Already egg-free!',glutenFree:'Use rice noodles and tamari'}},
+{id:'r31',n:'Ragi Dosa',e:'🫓',cat:['breakfast','dinner'],diet:'veg',t:'20 mins',s:3,al:[],ex:['ragi'],pf:{p:15,c:55,v:10,f:5},ing:[["Amma's Ragi Dosa batter",'2 cups'],['Water (to thin)','as needed'],['Oil','1 tsp per dosa']],steps:['Bring batter to room temperature. Thin with water to pouring consistency.','Heat a cast iron or non-stick tawa on high until very hot.','Pour a ladle in the centre and spread quickly in circles.','Drizzle oil on edges, cook until crisp (2–3 mins).','Flip and cook 1 min more. Serve with coconut chutney.'],tip:'Ragi dosa is naturally gluten-free and has significantly more calcium than wheat-based breads.',kid:'Crispy and thin — the satisfying crunch when you fold it is half the fun.',alt:{dairyFree:'Already dairy-free!',eggFree:'Already egg-free!',glutenFree:'Already gluten-free!'}},
+{id:'r32',n:'Chole with Chapati',e:'🍛',cat:['dinner','lunch'],diet:'veg',t:'40 mins',s:4,al:['gluten'],ex:['chickpeas'],pf:{p:30,c:45,v:20,f:5},ing:[['Chickpeas (canned or soaked)','1.5 cups cooked'],['Onion, tomatoes (pureed)','1 large, 2'],['Ginger-garlic paste, chole masala, oil','2 tsp, 2 tsp, 1 tbsp'],['Whole wheat flour for chapati','1.5 cups']],steps:['Sauté onion until dark golden. Add ginger-garlic.','Add tomato puree and chole masala. Cook 10 mins.','Add chickpeas with water. Simmer 20 mins.','Mash some chickpeas to thicken naturally.','Make chapatis. Serve together with sliced onion.'],tip:'Chickpeas are one of the most fibre-rich foods — keeps children full for hours.',kid:'The deep spiced aroma of chole cooking is one of the most comforting smells.',alt:{dairyFree:'Already dairy-free!',eggFree:'Already egg-free!',glutenFree:'Serve chole with rice'}},
+{id:'r33',n:'Air Fryer Paneer Tikka',e:'🧀',cat:['snack','dinner'],diet:'veg',t:'25 mins',s:3,al:['dairy'],ex:['paneer'],pf:{p:40,c:10,v:30,f:20},ing:[['Paneer (cubed)','250g'],['Capsicum and onion (cubed)','1 each'],['Thick yogurt, ginger-garlic paste, lemon, oil','4 tbsp, 1 tsp, 1 tbsp, 1 tsp'],['Kashmiri chilli, turmeric, cumin, garam masala','½ tsp each']],steps:['Mix yogurt, spices, ginger-garlic, lemon and oil into marinade.','Coat paneer, capsicum and onion. Marinate 30 mins.','Thread onto skewers alternating paneer and vegetables.','Air fry at 200°C for 12–15 mins, turning once.','Serve with mint chutney.'],tip:'Paneer tikka gives high protein without any refined carbs — excellent evening snack.',kid:'The bright colour and skewer presentation feels special. Perfect for weekend evenings.',alt:{dairyFree:'Use firm tofu cubes',eggFree:'Already egg-free!',glutenFree:'Already gluten-free!'}},
+{id:'r34',n:'Chicken Keema with Peas',e:'🍽️',cat:['dinner'],diet:'non-veg',t:'25 mins',s:3,al:[],ex:['chicken'],pf:{p:55,c:10,v:30,f:15},ing:[['Minced chicken (keema)','350g'],['Green peas','½ cup'],['Onion, tomato','1 large, 2 medium'],['Ginger-garlic paste, spices, oil','2 tsp, ½ tsp each, 1 tbsp']],steps:['Heat oil, sauté onion until golden. Add ginger-garlic.','Add tomatoes and spices. Cook until oil separates.','Add chicken keema, breaking lumps. Cook 8–10 mins.','Add peas and ½ cup water. Simmer 10 mins.','Serve with roti or as wrap filling.'],tip:'Minced chicken is very easy for young children to eat — no bones, no tough bites.',kid:'Use as stuffing for paranthas, rolls or a taco night.',alt:{dairyFree:'Already dairy-free!',eggFree:'Already egg-free!',glutenFree:'Serve with rice or millet roti'}},
+{id:'r35',n:'Veggie Frankie Wrap',e:'🌯',cat:['tiffin','snack','lunch'],diet:'veg',t:'20 mins',s:2,al:['gluten','dairy'],ex:[],pf:{p:15,c:45,v:40,f:10},ing:[['Whole wheat roti','2'],['Potato (boiled, mashed), capsicum, onion, carrot','1 medium, ½ each'],['Yogurt chutney','2 tbsp'],['Chaat masala, salt','to taste']],steps:['Season mashed potato with chaat masala, salt and coriander.','Lightly sauté capsicum and onion.','Warm roti on tawa. Spread yogurt chutney.','Add potato mash, sautéed veg and grated carrot in a line.','Roll tightly, wrap bottom in foil.'],tip:'Wraps are ideal for tiffin — don\'t get soggy and are easy for small hands.',kid:'Kids love the roll format. Every child can have their own custom filling.',alt:{dairyFree:'Use coconut chutney',eggFree:'Already egg-free!',glutenFree:'Use jowar or rice rotis'}},
+{id:'r36',n:'Hummus with Veggie Sticks',e:'🥕',cat:['snack'],diet:'veg',t:'10 mins',s:4,al:['sesame'],ex:['chickpeas','sesame'],pf:{p:20,c:20,v:55,f:15},ing:[['Canned chickpeas','1 can (400g)'],['Tahini, lemon juice, olive oil','2 tbsp each'],['Garlic clove, salt','1, to taste'],['Carrot, cucumber, capsicum sticks','2 each']],steps:['Blend chickpeas, tahini, lemon, garlic, olive oil and salt until smooth.','Add 2–3 tbsp ice cold water for creamy consistency.','Taste and adjust lemon, salt or garlic.','Spread in a bowl, drizzle olive oil on top.','Serve with cut vegetable sticks.'],tip:'Pairing hummus with raw vegetables gives protein and fibre in one snack — ideal after school.',kid:'Dipping is inherently fun. Children who refuse vegetables will eat them if there\'s something to dip.',alt:{dairyFree:'Already dairy-free!',eggFree:'Already egg-free!',sesameFree:'Skip tahini, add extra olive oil'}},
+{id:'r37',n:'Fruit Chaat',e:'🍓',cat:['snack'],diet:'veg',t:'5 mins',s:2,al:[],ex:[],pf:{p:5,c:30,v:65,f:2},ing:[['Seasonal fruit (apple, papaya, banana, pomegranate)','2 cups mixed'],['Chaat masala, lemon juice, black salt','to taste']],steps:['Cut all fruits into bite-sized pieces.','Toss with chaat masala, lemon juice and black salt.','Serve immediately in a bowl.'],tip:'Varied colourful fruits mean varied antioxidants — eat the rainbow applies literally here.',kid:'The salty-sour-sweet combo makes fruit taste exciting rather than just "healthy".',alt:{dairyFree:'Already dairy-free!',eggFree:'Already egg-free!',glutenFree:'Already gluten-free!'}},
+{id:'r38',n:'Roasted Makhana',e:'🍿',cat:['snack'],diet:'veg',t:'10 mins',s:2,al:[],ex:[],pf:{p:15,c:40,v:5,f:10},ing:[['Fox nuts (makhana)','2 cups'],['Ghee','1 tsp'],['Turmeric, cumin, chilli (mild), salt','to taste']],steps:['Heat ghee in a wide pan on low-medium heat.','Add makhana and roast stirring continuously 6–8 mins until crisp.','They should crunch when pressed.','Add all spices and toss quickly off the heat.','Cool completely before storing — stays crispy for 2 days.'],tip:'Makhana (lotus seeds) are low-fat and high in magnesium — an ideal school snack.',kid:'The crunch is deeply satisfying. Kids treat them like popcorn at movie time.',alt:{dairyFree:'Use coconut oil',eggFree:'Already egg-free!',glutenFree:'Already gluten-free!'}},
+{id:'r39',n:'Yogurt Berry Bowl',e:'🫐',cat:['breakfast','snack'],diet:'veg',t:'5 mins',s:1,al:['dairy'],ex:['berries'],pf:{p:20,c:30,v:45,f:5},ing:[['Plain thick yogurt (dahi)','1 cup'],['Mixed berries or fruits','½ cup'],['Rolled oats, chia seeds (optional)','2 tbsp, 1 tsp'],['Honey (tiny, optional)','½ tsp']],steps:['Spoon thick yogurt into a bowl.','Top with sliced fruits and berries.','Sprinkle oats and chia seeds if using.','A tiny drizzle of honey if needed.','Eat immediately while yogurt is cold.'],tip:'Chia seeds add omega-3 and fibre invisibly — a powerful tiny addition.',kid:'Let children arrange the fruit toppings themselves — they will eat every bite they placed.',alt:{dairyFree:'Use coconut yogurt',eggFree:'Already egg-free!',glutenFree:'Skip oats or use certified GF'}},
+{id:'r40',n:'Apple Cinnamon Oatmeal',e:'🍎',cat:['breakfast'],diet:'veg',t:'10 mins',s:1,al:['gluten','dairy'],ex:['apple'],pf:{p:10,c:55,v:30,f:5},ing:[['Rolled oats','½ cup'],['Milk or oat milk','1 cup'],['Apple (grated or diced)','1 small'],['Cinnamon powder','¼ tsp']],steps:['Bring milk to a gentle simmer in a small pot.','Add oats and stir on medium heat 4–5 mins until thickened.','Stir in grated apple and cinnamon.','Cook 2 more mins until apple is soft.','Serve warm, topped with more apple slices.'],tip:'Cinnamon helps regulate blood sugar even in small amounts — a smart spice for children.',kid:'The apple caramelises slightly as it cooks — natural sweetness, no added sugar.',alt:{dairyFree:'Use oat milk',eggFree:'Already egg-free!',glutenFree:'Use certified GF oats'}},
+{id:'r41',n:'Sweet Corn Chaat',e:'🌽',cat:['snack'],diet:'veg',t:'10 mins',s:2,al:[],ex:['corn'],pf:{p:10,c:55,v:35,f:5},ing:[['Sweet corn kernels (steamed)','1.5 cups'],['Butter, chaat masala, lemon juice, coriander','½ tsp, ½ tsp, 1 tsp, 1 tbsp']],steps:['Steam or boil corn kernels until tender.','Toss with butter while hot.','Add chaat masala, lemon juice and coriander.','Stir and serve warm.'],tip:'Corn is rich in lutein and zeaxanthin — both support eye health in children.',kid:'Sweet, bright yellow and satisfying pop. One of the easiest healthy snacks to get kids to eat.',alt:{dairyFree:'Skip butter or use coconut oil',eggFree:'Already egg-free!',glutenFree:'Already gluten-free!'}},
+{id:'r42',n:'Zucchini Oat Muffins',e:'🧁',cat:['snack','tiffin'],diet:'veg',t:'30 mins',s:4,al:['gluten','egg'],ex:['zucchini'],pf:{p:15,c:40,v:35,f:15},ing:[['Oat flour','1.5 cups'],['Zucchini (grated)','1 medium'],['Ripe banana or date paste','2 bananas'],['Eggs, olive oil, cinnamon, baking powder','2, 3 tbsp, ½ tsp, 1 tsp']],steps:['Preheat oven to 180°C. Grease a muffin tin.','Squeeze excess water from grated zucchini.','Beat eggs, banana/date paste and olive oil together.','Fold in oat flour, cinnamon and baking powder.','Stir in grated zucchini. Fill moulds ¾ full. Bake 22–25 mins.'],tip:'Zucchini is almost tasteless when baked in — pure nutrition with zero veggie resistance.',kid:'These look completely normal but have a whole zucchini hidden inside.',alt:{dairyFree:'Already dairy-free!',eggFree:'Use 2 flax eggs',glutenFree:'Use certified GF oat flour'}},
+{id:'r43',n:'Sattu Parantha',e:'🫔',cat:['breakfast','tiffin'],diet:'veg',t:'25 mins',s:3,al:['gluten'],ex:[],pf:{p:30,c:45,v:10,f:15},ing:[['Multigrain atta','1.5 cups'],['Sattu (roasted gram flour)','½ cup'],['Onion, coriander, cumin, chilli, lemon, salt','to taste'],['Oil or ghee','1 tsp per parantha']],steps:['Knead atta with water into soft dough. Rest 15 mins.','Mix sattu, onion, coriander, chilli, cumin, lemon and salt.','Roll dough ball, fill with sattu mix, seal and roll gently flat.','Cook on hot tawa with ghee on both sides until golden.'],tip:'Sattu is among the highest protein traditional Indian foods — historically eaten by wrestlers.',kid:'Filling, satisfying and travels perfectly in a tiffin box without getting soggy.',alt:{dairyFree:'Use oil instead of ghee',eggFree:'Already egg-free!',glutenFree:'Use jowar or bajra atta'}},
+{id:'r44',n:'Lentil Vegetable Soup',e:'🍲',cat:['dinner','lunch'],diet:'veg',t:'30 mins',s:4,al:[],ex:[],pf:{p:30,c:25,v:45,f:5},ing:[['Red lentils (masoor dal)','¾ cup'],['Carrot, celery, tomato, onion','1 each'],['Garlic, cumin, turmeric, olive oil, salt','to taste'],['Water or vegetable broth','4 cups']],steps:['Heat oil, sauté onion and garlic until soft.','Add cumin, turmeric, tomato and stir 2 mins.','Add lentils, carrot, celery and water.','Simmer 25 mins until lentils dissolve.','Blend partially for thicker soup. Season with salt and lemon.'],tip:'Red lentils dissolve completely — the easiest way to sneak high-quality protein into a meal.',kid:'Warm, smooth and gentle. Perfect on cold or rainy evenings.',alt:{dairyFree:'Already dairy-free!',eggFree:'Already egg-free!',glutenFree:'Already gluten-free!'}},
+{id:'r45',n:'Quinoa Vegetable Bowl',e:'🥗',cat:['dinner','lunch'],diet:'veg',t:'25 mins',s:2,al:[],ex:['quinoa'],pf:{p:25,c:35,v:45,f:10},ing:[['Quinoa','½ cup'],['Broccoli florets, cherry tomatoes, cucumber','1 cup, ½ cup, ½ cup'],['Lemon juice, olive oil, salt, pepper, herbs','to taste']],steps:['Rinse quinoa. Cook in 1 cup water 15 mins until fluffy.','Steam broccoli 4 mins until bright green and just tender.','Combine quinoa, broccoli, tomatoes and cucumber.','Dress with lemon juice, olive oil, salt and pepper.','Serve at room temperature or slightly warm.'],tip:'Quinoa is one of very few plant foods containing all essential amino acids.',kid:'The fluffy texture and mild nuttiness is generally well received. Call it "tiny seed rice".',alt:{dairyFree:'Already dairy-free!',eggFree:'Already egg-free!',glutenFree:'Already gluten-free!'}},
+{id:'r46',n:'Avocado Whole Wheat Toast',e:'🥑',cat:['breakfast','snack'],diet:'veg',t:'5 mins',s:1,al:['gluten'],ex:['avocado'],pf:{p:10,c:35,v:30,f:35},ing:[['Whole wheat bread','2 slices'],['Ripe avocado','1'],['Lemon juice, salt, pepper, chaat masala','to taste']],steps:['Toast bread until golden.','Mash avocado with lemon juice, salt and pepper.','Spread generously on toast.','Top with chilli flakes or chaat masala for an Indian twist.'],tip:"Avocado's healthy fats are essential for children's brain myelination — speeding up thinking.",kid:'The creamy green spread looks interesting. Add a sunny-side egg on top for a complete meal.',alt:{dairyFree:'Already dairy-free!',eggFree:'Already egg-free!',glutenFree:'Use GF bread or rice cakes'}},
+{id:'r47',n:'Banana Oat Smoothie',e:'🥤',cat:['breakfast','snack'],diet:'veg',t:'5 mins',s:1,al:['gluten','dairy'],ex:['banana'],pf:{p:15,c:55,v:20,f:5},ing:[['Ripe banana','1 large'],['Rolled oats','3 tbsp'],['Milk or yogurt','1 cup'],['Spinach (optional, hidden)','handful'],['Cinnamon','¼ tsp']],steps:['Blend all ingredients together until completely smooth.','If too thick, add a little milk to thin.','Pour into a glass or bottle for on-the-go mornings.'],tip:'Spinach in a banana smoothie is undetectable in taste but adds significant iron.',kid:'A green smoothie that tastes like pure banana. The spinach is completely invisible.',alt:{dairyFree:'Use oat milk',eggFree:'Already egg-free!',glutenFree:'Use certified GF oats'}},
+{id:'r48',n:'Paneer & Spinach Quesadilla',e:'🫓',cat:['snack','tiffin','dinner'],diet:'veg',t:'15 mins',s:2,al:['gluten','dairy'],ex:['paneer','spinach'],pf:{p:35,c:35,v:25,f:20},ing:[['Whole wheat tortillas or rotis','4'],['Paneer (grated)','150g'],['Spinach (chopped)','1 cup'],['Onion, cumin, chilli, oil','½ small, to taste']],steps:['Sauté onion until soft, add spinach and cook until wilted.','Mix with paneer and spices.','Lay filling on one roti, fold or cover with another.','Cook on dry tawa on medium heat 2 mins each side, pressing gently.','Cut into wedges. Serve with yogurt dip.'],tip:'A quesadilla format makes vegetables and protein look exciting — fusion presentation.',kid:'Crispy exterior and melty filling. Cut in triangles for maximum appeal.',alt:{dairyFree:'Use crumbled firm tofu',eggFree:'Already egg-free!',glutenFree:'Use rice flour or corn tortillas'}},
+{id:'r49',n:'Cucumber Raita',e:'🥒',cat:['snack','lunch'],diet:'veg',t:'5 mins',s:2,al:['dairy'],ex:['cucumber'],pf:{p:20,c:10,v:60,f:5},ing:[['Thick yogurt (dahi)','1 cup'],['Cucumber (grated or diced)','1 medium'],['Roasted cumin, salt, pepper, coriander/mint','to taste']],steps:['Squeeze excess water from grated cucumber.','Whisk yogurt smooth.','Mix in cucumber, cumin, salt and pepper.','Garnish with fresh coriander or mint.','Serve chilled.'],tip:"Live yogurt is one of the best probiotic foods for children's gut microbiome.",kid:'Cool, mild and creamy. Perfect alongside any spicy or dry dish to balance the plate.',alt:{dairyFree:'Use coconut yogurt',eggFree:'Already egg-free!',glutenFree:'Already gluten-free!'}},
+{id:'r50',n:'Mini Idli Sambar Bowl',e:'🫙',cat:['breakfast','dinner','tiffin'],diet:'veg',t:'30 mins',s:3,al:[],ex:[],pf:{p:20,c:50,v:25,f:5},ing:[['Idli batter (readymade)','2 cups'],['Toor dal (cooked)','½ cup'],['Mixed vegetables (carrot, onion, tomato)','1.5 cups'],['Sambar powder, tamarind, mustard seeds, curry leaves, oil','to taste']],steps:['Steam idlis in greased moulds for 12–15 mins.','Cook toor dal until very soft. Add tamarind, sambar powder and salt.','Add vegetables and simmer 15 mins.','Prepare mustard-curry leaf tadka and pour into sambar.','Serve mini idlis dunked in a bowl of hot sambar.'],tip:'Fermented idli batter is rich in beneficial bacteria — one of the best traditional probiotic foods.',kid:'Mini idlis in sambar is interactive — children fish the idlis out with a spoon.',alt:{dairyFree:'Already dairy-free!',eggFree:'Already egg-free!',glutenFree:'Already gluten-free!'}}
+];
+
+// ── STATE ──────────────────────────────────────────────────────────────────
+const S={tab:'dinner',diet:'all',exAl:[],exIng:[],liked:[],idx:{dinner:0,tiffin:0,snack:0,breakfast:0}};
+const $=id=>document.getElementById(id);
+
+// ── FILTER ─────────────────────────────────────────────────────────────────
+function filtered(tab){
+  return R.filter(r=>{
+    if(!r.cat.includes(tab))return false;
+    if(S.diet==='veg'&&r.diet!=='veg')return false;
+    if(S.diet==='non-veg'&&r.diet!=='non-veg')return false;
+    if(S.exAl.some(a=>r.al.includes(a)))return false;
+    if(S.exIng.some(i=>r.ex.includes(i)))return false;
+    return true;
+  });
+}
+
+function toast(msg){const t=$('toast');t.textContent=msg;t.classList.add('on');setTimeout(()=>t.classList.remove('on'),2200);}
+
+// ── CARDS ──────────────────────────────────────────────────────────────────
+function renderCards(){
+  const area=$('cardArea');
+  const recs=filtered(S.tab);
+  const idx=S.idx[S.tab];
+  const stack=recs.slice(idx,idx+3);
+  area.innerHTML='';
+  if(!stack.length){
+    area.innerHTML=`<div class="nocards"><span class="big">🙌</span><h3>You've seen them all!</h3><p>Change the filters or reset to start fresh.</p><button class="rbtn" onclick="resetCards()">Start Over 🔄</button></div>`;
+    return;
+  }
+  [...stack].reverse().forEach((rec,ri)=>{
+    const i=stack.length-1-ri;
+    const card=makeCard(rec,i===0);
+    card.style.zIndex=10-i;
+    if(i>0)card.style.transform=`scale(${1-i*.04}) translateY(${i*10}px)`;
+    area.appendChild(card);
+  });
+  if(stack[0])initSwipe(area.lastChild,stack[0]);
+}
+
+function makeCard(rec,isTop){
+  const d=document.createElement('div');
+  d.className='rc';
+  d.innerHTML=`
+    <div class="sind like">❤️ YUM!</div>
+    <div class="sind skip">✕ SKIP</div>
+    <div class="rc-top">
+      <span class="rc-emoji">${rec.e}</span>
+      <span class="rc-badge ${rec.diet}">${rec.diet==='veg'?'🟢 Veg':'🔴 Non-Veg'}</span>
+    </div>
+    <div class="rc-body">
+      <div class="rc-name">${rec.n}</div>
+      <div class="rc-meta"><span>⏱ ${rec.t}</span><span>👨‍👩‍👧 Serves ${rec.s}</span></div>
+      <div class="bars">
+        <div class="bar"><div class="blbl">Protein</div><div class="btrk"><div class="bfil p" style="width:${rec.pf.p}%"></div></div></div>
+        <div class="bar"><div class="blbl">Carbs</div><div class="btrk"><div class="bfil c" style="width:${rec.pf.c}%"></div></div></div>
+        <div class="bar"><div class="blbl">Veg</div><div class="btrk"><div class="bfil v" style="width:${rec.pf.v}%"></div></div></div>
+        <div class="bar"><div class="blbl">Fat</div><div class="btrk"><div class="bfil f" style="width:${Math.min(rec.pf.f*2,100)}%"></div></div></div>
+      </div>
+      <div class="rc-tip"><strong>💡 Nutrition tip</strong>${rec.tip}</div>
+    </div>`;
+  if(isTop){
+    d.addEventListener('click',e=>{
+      if(Math.abs(d._dx||0)<8)showRecipe(rec);
+    });
+  }
+  return d;
+}
+
+function initSwipe(el,rec){
+  if(!el)return;
+  let sx=0,sy=0,dx=0,dragging=false;
+  const like=el.querySelector('.sind.like'),skip=el.querySelector('.sind.skip');
+  function start(x,y){sx=x;sy=y;dx=0;dragging=true;el.style.transition='none';}
+  function move(x){
+    if(!dragging)return;
+    dx=x-sx;
+    el._dx=dx;
+    const rot=dx*0.08,op=Math.min(Math.abs(dx)/80,1);
+    el.style.transform=`translateX(${dx}px) rotate(${rot}deg)`;
+    like.style.opacity=dx>0?op:0;
+    skip.style.opacity=dx<0?op:0;
+  }
+  function end(){
+    if(!dragging)return;dragging=false;
+    el.style.transition='transform .3s ease';
+    if(dx>90){doLike(rec);}
+    else if(dx<-90){doSkip();}
+    else{el.style.transform='';like.style.opacity=0;skip.style.opacity=0;}
+  }
+  el.addEventListener('mousedown',e=>{start(e.clientX,e.clientY);});
+  document.addEventListener('mousemove',e=>{if(dragging)move(e.clientX);});
+  document.addEventListener('mouseup',end);
+  el.addEventListener('touchstart',e=>{const t=e.touches[0];start(t.clientX,t.clientY);},{passive:true});
+  el.addEventListener('touchmove',e=>{move(e.touches[0].clientX);},{passive:true});
+  el.addEventListener('touchend',end);
+}
+
+function doLike(rec){
+  S.idx[S.tab]++;
+  if(!S.liked.find(r=>r.id===rec.id)){S.liked.push(rec);updateBadge();}
+  toast('❤️ Added to liked meals!');
+  renderCards();
+}
+function doSkip(){S.idx[S.tab]++;renderCards();}
+function resetCards(){S.idx[S.tab]=0;renderCards();}
+function updateBadge(){const b=$('lbadge');b.textContent=S.liked.length;b.style.display=S.liked.length?'flex':'none';}
+
+// ── RECIPE DETAIL ──────────────────────────────────────────────────────────
+function showRecipe(rec){
+  const v=$('vRecipe'),c=$('rContent');
+  const isLiked=S.liked.find(r=>r.id===rec.id);
+  c.innerHTML=`
+    <div class="rh">
+      <button class="rclose" onclick="$('vRecipe').classList.remove('on');$('vRecipe').style.display='none'">✕</button>
+      <span class="rh-emoji">${rec.e}</span>
+      <h1>${rec.n}</h1>
+      <div class="rh-meta"><span>⏱ ${rec.t}</span><span>👨‍👩‍👧 Serves ${rec.s}</span><span>${rec.diet==='veg'?'🟢 Veg':'🔴 Non-Veg'}</span></div>
+    </div>
+    <div class="rb">
+      <div class="rs"><h2>🛒 Ingredients</h2>
+        <ul class="ilist">${rec.ing.map(([i,q])=>`<li class="iitem"><span>${i}</span><span class="qty">${q}</span></li>`).join('')}</ul>
+      </div>
+      <div class="rs"><h2>👩‍🍳 How to Make</h2>
+        <ul class="slist">${rec.steps.map((s,i)=>`<li class="sitem"><span class="snum">${i+1}</span><span>${s}</span></li>`).join('')}</ul>
+      </div>
+      <div class="rs">
+        <div class="tbox n"><div class="tlbl">💡 Nutrition Tip</div><p>${rec.tip}</p></div>
+        <div class="tbox k" style="margin-top:8px"><div class="tlbl">👶 Kid Angle</div><p>${rec.kid}</p></div>
+      </div>
+      <div class="rs"><h2>🔄 Alternatives & Swaps</h2>
+        ${Object.entries(rec.alt).map(([k,v])=>`<div class="aitem"><strong>${k.replace(/([A-Z])/g,' $1').replace(/^./,s=>s.toUpperCase())}</strong>${v}</div>`).join('')}
+      </div>
+      <button class="rlike-btn" onclick="likeFromRecipe('${rec.id}')">${isLiked?'✓ Already in Liked Meals':'❤️ Add to Liked Meals'}</button>
+    </div>`;
+  v.style.display='block';
+  setTimeout(()=>v.classList.add('on'),10);
+}
+function likeFromRecipe(id){
+  const rec=R.find(r=>r.id===id);
+  if(!S.liked.find(r=>r.id===id)){S.liked.push(rec);updateBadge();toast('❤️ Added to liked meals!');}
+  else toast('Already in your liked meals!');
+}
+
+// ── LIKED VIEW ─────────────────────────────────────────────────────────────
+function renderLiked(){
+  const list=$('likedList');
+  if(!S.liked.length){list.innerHTML=`<div class="lempty"><span class="big">🍽️</span><p>Swipe right on meals you love to save them here!</p></div>`;return;}
+  list.innerHTML=`<div class="llist">${S.liked.map(rec=>`
+    <div class="litem" onclick="showRecipe(R.find(r=>r.id==='${rec.id}'))">
+      <span class="litem-e">${rec.e}</span>
+      <div class="litem-info">
+        <div class="litem-name">${rec.n}</div>
+        <div class="litem-meta"><span>${rec.diet==='veg'?'🟢 Veg':'🔴 Non-Veg'}</span><span>⏱ ${rec.t}</span></div>
+      </div>
+      <button class="litem-rm" onclick="event.stopPropagation();removeLiked('${rec.id}')">✕</button>
+    </div>`).join('')}</div>`;
+}
+function removeLiked(id){S.liked=S.liked.filter(r=>r.id!==id);updateBadge();renderLiked();renderPlate();}
+
+// ── PLATE VIEW ─────────────────────────────────────────────────────────────
+function renderPlate(){
+  const svgEl=$('plateSvg'),legEl=$('plateLeg'),fbEl=$('plateFB'),chEl=$('plateChips');
+  if(!S.liked.length){
+    svgEl.innerHTML='<div style="text-align:center;padding:30px;color:var(--bl)"><div style="font-size:48px">🍽️</div><p style="font-size:13px;margin-top:8px">Like some meals to see your balance plate</p></div>';
+    legEl.innerHTML='';fbEl.innerHTML='';chEl.innerHTML='';return;
+  }
+  const sum=S.liked.reduce((a,r)=>({p:a.p+r.pf.p,c:a.c+r.pf.c,v:a.v+r.pf.v,f:a.f+r.pf.f}),{p:0,c:0,v:0,f:0});
+  const n=S.liked.length;
+  const avg={p:Math.round(sum.p/n),c:Math.round(sum.c/n),v:Math.round(sum.v/n),f:Math.round(sum.f/n)};
+  const tot=avg.p+avg.c+avg.v+avg.f||1;
+  const vPct=Math.round(avg.v/tot*100),pPct=Math.round(avg.p/tot*100),cPct=Math.round(avg.c/tot*100),fPct=100-vPct-pPct-cPct;
+  // Draw SVG plate
+  const cx=110,cy=110,r=95,sw=190;
+  function arc(pct,offset){
+    const ang=pct/100*2*Math.PI,x1=cx+r*Math.sin(offset*2*Math.PI/100),y1=cy-r*Math.cos(offset*2*Math.PI/100);
+    const x2=cx+r*Math.sin((offset+pct)/100*2*Math.PI),y2=cy-r*Math.cos((offset+pct)/100*2*Math.PI);
+    const lg=pct>50?1:0;
+    return `M${cx},${cy} L${x1},${y1} A${r},${r} 0 ${lg},1 ${x2},${y2} Z`;
+  }
+  let off=0;
+  const segs=[
+    {pct:vPct,col:'#5A9A6F',lbl:'Veg & Fruit'},
+    {pct:pPct,col:'#E07B39',lbl:'Protein'},
+    {pct:cPct,col:'#E8B84B',lbl:'Carbs'},
+    {pct:fPct,col:'#A8C090',lbl:'Fat'}
+  ];
+  const paths=segs.map(s=>{const p=`<path d="${arc(s.pct,off)}" fill="${s.col}" stroke="white" stroke-width="2"/>`;off+=s.pct;return p;}).join('');
+  svgEl.innerHTML=`<svg width="${sw}" height="${sw}" viewBox="0 0 ${sw} ${sw}">
+    <circle cx="${cx}" cy="${cy}" r="${r+5}" fill="#FDF6EC" stroke="#E8B84B" stroke-width="3"/>
+    ${paths}
+    <circle cx="${cx}" cy="${cy}" r="30" fill="white"/>
+    <text x="${cx}" y="${cy+5}" text-anchor="middle" font-size="20">🍽️</text>
+  </svg>`;
+  legEl.innerHTML=segs.map((s,i)=>`
+    <div class="pleg-item">
+      <div class="pleg-dot" style="background:${s.col}"></div>
+      <div><div class="pleg-lbl">${s.lbl}</div><div class="pleg-val">${s.pct}%</div></div>
+    </div>`).join('');
+  // Feedback
+  let emoji='😊',title='Good balance!',msg='Your selections look well-rounded. Keep it up!';
+  if(avg.v<20){emoji='🥦';title='Add more vegetables!';msg='Try adding a veggie-rich dish — aim for at least half the plate to be vegetables and fruit.';}
+  else if(avg.p<15){emoji='💪';title='Boost the protein!';msg='Add a dal, egg, paneer or chicken dish to build strong muscles and support growth.';}
+  else if(avg.c>55){emoji='🌾';title='Slightly carb-heavy';msg='Balance with more vegetables or protein. Try a millet swap or add a salad side.';}
+  else if(vPct>=45&&pPct>=20){emoji='⭐';title='Excellent balance!';msg='Great job! Your plate has a lovely balance of vegetables, protein and wholesome carbs.';}
+  fbEl.innerHTML=`<div class="fe">${emoji}</div><h3>${title}</h3><p>${msg}</p>`;
+  chEl.innerHTML=S.liked.map(r=>`<span class="pchip">${r.e} ${r.n}</span>`).join('');
+}
+
+// ── FILTER PANEL ───────────────────────────────────────────────────────────
+const ALLERGENS=['gluten','dairy','egg','nuts','soy','sesame','fish'];
+const INGREDIENTS=['chicken','paneer','egg','fish','onion','garlic','ragi','banana','broccoli','spinach','beetroot','cauliflower','avocado','quinoa','zucchini','nuts','fenugreek','corn','sprouts','kidney beans','chickpeas'];
+function initFilters(){
+  $('fAl').innerHTML=ALLERGENS.map(a=>`<button class="fchip" data-type="al" data-val="${a}">${a}</button>`).join('');
+  $('fIng').innerHTML=INGREDIENTS.map(i=>`<button class="fchip" data-type="ing" data-val="${i}">${i}</button>`).join('');
+  document.querySelectorAll('.fchip').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      btn.classList.toggle('on');
+      const list=btn.dataset.type==='al'?S.exAl:S.exIng;
+      const val=btn.dataset.val;
+      const idx=list.indexOf(val);
+      if(idx>-1)list.splice(idx,1);else list.push(val);
+    });
+  });
+}
+$('openF').addEventListener('click',()=>{$('vF').classList.add('on');$('fov').classList.add('on');});
+$('fov').addEventListener('click',()=>{$('vF').classList.remove('on');$('fov').classList.remove('on');});
+$('applyF').addEventListener('click',()=>{
+  Object.keys(S.idx).forEach(k=>S.idx[k]=0);
+  $('vF').classList.remove('on');$('fov').classList.remove('on');
+  renderCards();toast('Filters applied!');
+});
+
+// ── NAVIGATION ─────────────────────────────────────────────────────────────
+document.querySelectorAll('.nbtn').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('.nbtn').forEach(b=>b.classList.remove('on'));
+    btn.classList.add('on');
+    const nav=btn.dataset.nav;
+    document.querySelectorAll('.view').forEach(v=>v.classList.remove('on'));
+    $('v'+nav).classList.add('on');
+    if(nav==='Liked')renderLiked();
+    if(nav==='Plate')renderPlate();
+  });
+});
+
+// ── TABS ───────────────────────────────────────────────────────────────────
+document.querySelectorAll('.tab').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('.tab').forEach(b=>b.classList.remove('on'));
+    btn.classList.add('on');
+    S.tab=btn.dataset.t;
+    renderCards();
+  });
+});
+
+// ── DIET TOGGLE ────────────────────────────────────────────────────────────
+document.querySelectorAll('.dbtn').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('.dbtn').forEach(b=>b.classList.remove('on'));
+    btn.classList.add('on');
+    S.diet=btn.dataset.d;
+    Object.keys(S.idx).forEach(k=>S.idx[k]=0);
+    renderCards();
+  });
+});
+
+// ── BUTTON ACTIONS ─────────────────────────────────────────────────────────
+$('btnSkip').addEventListener('click',()=>{
+  const recs=filtered(S.tab);
+  const card=document.querySelector('.rc');
+  if(!card||S.idx[S.tab]>=recs.length)return;
+  card.style.transition='transform .3s ease';
+  card.style.transform='translateX(-120%) rotate(-15deg)';
+  setTimeout(doSkip,280);
+});
+$('btnLike').addEventListener('click',()=>{
+  const recs=filtered(S.tab);
+  const card=document.querySelector('.rc');
+  if(!card||S.idx[S.tab]>=recs.length)return;
+  const rec=recs[S.idx[S.tab]];
+  card.style.transition='transform .3s ease';
+  card.style.transform='translateX(120%) rotate(15deg)';
+  setTimeout(()=>doLike(rec),280);
+});
+$('btnInfo').addEventListener('click',()=>{
+  const recs=filtered(S.tab);
+  if(S.idx[S.tab]<recs.length)showRecipe(recs[S.idx[S.tab]]);
+});
+
+// ── INIT ───────────────────────────────────────────────────────────────────
+initFilters();
+renderCards();
+</script>
+</body>
+</html>
