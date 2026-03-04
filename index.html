@@ -185,8 +185,11 @@ body{font-family:'Lato',sans-serif;background:var(--cr);color:var(--br);max-widt
   <div id="likedList"></div>
 </div>
 <div id="vPlate" class="view">
-  <button onclick="switchTo('Cards')" style="background:none;border:none;color:var(--bl);font-size:12px;font-weight:700;cursor:pointer;padding:2px 0 10px;opacity:.65">← Back to Discover</button>
-  <div class="shdr"><h2>My Balance Plate 🍽️</h2><p>Based on your liked meals</p></div>
+ <button onclick="switchTo('Cards')" style="background:none;border:none;color:var(--bl);font-size:12px;font-weight:700;cursor:pointer;padding:2px 0 10px;opacity:.65">← Back to Discover</button>
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
+    <div class="shdr" style="margin-bottom:0;text-align:left"><h2>My Balance Plate 🍽️</h2><p>Based on meals added to plate</p></div>
+    <button onclick="clearPlate()" style="background:none;border:1px solid var(--cd);border-radius:16px;padding:5px 12px;font-size:11px;font-family:'Lato',sans-serif;font-weight:700;color:var(--bl);cursor:pointer;opacity:.7;white-space:nowrap">Clear ✕</button>
+  </div>
   <div class="plate-wrap" id="plateSvg"></div>
   <div class="pleg" id="plateLeg"></div>
   <div class="pfb" id="plateFB"></div>
@@ -470,6 +473,12 @@ function renderLiked(){
 }
 function removeLiked(id){S.liked=S.liked.filter(r=>r.id!==id);updateBadge();renderLiked();renderPlate();}
   function removePlate(id){S.plate=S.plate.filter(r=>r.id!==id);renderPlate();}
+function clearPlate(){
+  if(!S.plate.length)return;
+  S.plate=[];
+  renderPlate();
+  toast('Plate cleared!');
+}
 function renderBrowse(){
   const recs=R.filter(r=>{
     if(S.diet==='veg'&&r.diet!=='veg')return false;
@@ -479,8 +488,9 @@ function renderBrowse(){
     return true;
   });
   $('browseSub').textContent=`${recs.length} recipes · 📋 view recipe · 🍽️ add to plate`;
-  $('browseList').innerHTML=recs.map(r=>`
-    <div class="bitem">
+  $('browseList').innerHTML=recs.map(r=>{
+    const onPlate=!!S.plate.find(x=>x.id===r.id);
+    return `<div class="bitem" style="${onPlate?'border:1.5px solid var(--tr)':''}">
       <span class="bitem-e">${r.e}</span>
       <div class="bitem-info">
         <div class="bitem-name">${r.n}</div>
@@ -488,13 +498,15 @@ function renderBrowse(){
           <span>${r.diet==='veg'?'🟢 Veg':'🔴 Non-Veg'}</span>
           <span>⏱ ${r.t}</span>
           <span>👨‍👩‍👧 ${r.s}</span>
+          ${onPlate?'<span style="color:var(--tr);font-weight:700">✓ On plate</span>':''}
         </div>
       </div>
       <div class="bitem-acts">
         <button class="bitem-btn" style="background:#fff;color:var(--bl)" onclick="showRecipe(R.find(x=>x.id==='${r.id}'))">📋</button>
-        <button class="bitem-btn" style="background:var(--tr);color:#fff" onclick="addToPlateFromRecipe('${r.id}')">🍽️</button>
+        <button class="bitem-btn" style="background:${onPlate?'#4A7C59':'var(--tr)'};color:#fff" onclick="addToPlateFromRecipe('${r.id}');renderBrowse()">${onPlate?'✓':'🍽️'}</button>
       </div>
-    </div>`).join('');
+    </div>`;
+  }).join('');
 }
 // ── PLATE VIEW ─────────────────────────────────────────────────────────────
 function renderPlate(){
