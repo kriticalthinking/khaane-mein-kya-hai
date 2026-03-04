@@ -178,6 +178,7 @@ body{font-family:'Lato',sans-serif;background:var(--cr);color:var(--br);max-widt
   <div id="likedList"></div>
 </div>
 <div id="vPlate" class="view">
+  <button onclick="switchTo('Cards')" style="background:none;border:none;color:var(--bl);font-size:12px;font-weight:700;cursor:pointer;padding:2px 0 10px;opacity:.65">← Back to Discover</button>
   <div class="shdr"><h2>My Balance Plate 🍽️</h2><p>Based on your liked meals</p></div>
   <div class="plate-wrap" id="plateSvg"></div>
   <div class="pleg" id="plateLeg"></div>
@@ -380,7 +381,7 @@ function showRecipe(rec){
   const isLiked=S.liked.find(r=>r.id===rec.id);
   c.innerHTML=`
     <div class="rh">
-      <button class="rclose" onclick="$('vRecipe').classList.remove('on');$('vRecipe').style.display='none'">✕</button>
+      <button class="rclose" onclick="closeRecipe()" style="border-radius:20px;padding:6px 14px;width:auto;font-size:12px;font-weight:700;letter-spacing:.3px">← Back</button>
       <span class="rh-emoji">${rec.e}</span>
       <h1>${rec.n}</h1>
       <div class="rh-meta"><span>⏱ ${rec.t}</span><span>👨‍👩‍👧 Serves ${rec.s}</span><span>${rec.diet==='veg'?'🟢 Veg':'🔴 Non-Veg'}</span></div>
@@ -407,7 +408,22 @@ function showRecipe(rec){
   v.style.display='block';
   setTimeout(()=>v.classList.add('on'),10);
 }
-function likeFromRecipe(id){
+function closeRecipe(){
+  const v=$('vRecipe');
+  v.style.transition='transform .35s ease';
+  v.style.transform='translateX(-50%) translateY(100%)';
+  setTimeout(()=>{v.classList.remove('on');v.style.display='none';v.style.transform='';v.style.transition='';},350);
+}
+function switchTo(nav){
+  document.querySelectorAll('.nbtn').forEach(b=>b.classList.remove('on'));
+  document.querySelector(`.nbtn[data-nav="${nav}"]`).classList.add('on');
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('on'));
+  $('v'+nav).classList.add('on');
+  if(nav==='Liked')renderLiked();
+  if(nav==='Plate')renderPlate();
+  if(nav==='Browse')renderBrowse();
+}
+  function likeFromRecipe(id){
   const rec=R.find(r=>r.id===id);
   const btn=document.getElementById('heartBtn_'+id);
   if(!S.liked.find(r=>r.id===id)){
@@ -584,7 +600,17 @@ $('btnPlate').addEventListener('click',()=>{
   card.style.transform='translateX(120%) rotate(15deg)';
   setTimeout(()=>doPlate(rec),280);
 });
-
+// Swipe down to close recipe
+(function(){
+  const v=$('vRecipe');let sy=0,sx=0;
+  v.addEventListener('touchstart',e=>{sy=e.touches[0].clientY;sx=e.touches[0].clientX;},{passive:true});
+  v.addEventListener('touchend',e=>{
+    if(v.scrollTop>20)return;
+    const dy=e.changedTouches[0].clientY-sy;
+    const dx=Math.abs(e.changedTouches[0].clientX-sx);
+    if(dy>90&&dx<60)closeRecipe();
+  },{passive:true});
+})();
 // ── INIT ───────────────────────────────────────────────────────────────────
 initFilters();
 renderCards();
