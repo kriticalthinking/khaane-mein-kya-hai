@@ -157,27 +157,19 @@ body{font-family:'Lato',sans-serif;background:var(--cr);color:var(--br);max-widt
   <div style="display:flex;align-items:center;gap:5px;color:#C0392B;font-size:11px;font-weight:700;opacity:.7">
     <span style="font-size:18px">←</span> Skip
   </div>
-  <span style="font-size:10px;color:var(--bl);opacity:.6">Swipe or use buttons below</span>
-  <div style="display:flex;align-items:center;gap:5px;color:#4A7C59;font-size:11px;font-weight:700;opacity:.7">
-    Like <span style="font-size:18px">→</span>
+  <span style="font-size:10px;color:var(--bl);opacity:.6">Hold card for recipe</span>
+  <div style="display:flex;align-items:center;gap:5px;color:var(--tr);font-size:11px;font-weight:700;opacity:.7">
+    Add to Plate <span style="font-size:18px">→</span>
   </div>
 </div>
-  <div class="acts" style="gap:10px">
-  <div style="display:flex;flex-direction:column;align-items:center;gap:4px">
-    <button class="abtn skip" id="btnSkip" style="width:52px;height:52px;font-size:20px">✕</button>
-    <span style="font-size:9px;color:var(--nv);font-weight:700;text-transform:uppercase;letter-spacing:.4px">Skip</span>
+ <div class="acts" style="gap:24px;justify-content:center;padding:8px 0">
+  <div style="display:flex;flex-direction:column;align-items:center;gap:5px">
+    <button class="abtn skip" id="btnSkip" style="width:62px;height:62px;font-size:24px;background:#fff;color:var(--nv)">✕</button>
+    <span style="font-size:9px;color:var(--nv);font-weight:700;text-transform:uppercase;letter-spacing:.5px">Skip</span>
   </div>
-  <div style="display:flex;flex-direction:column;align-items:center;gap:4px">
-    <button class="abtn info" id="btnInfo" style="width:52px;height:52px;font-size:20px">📋</button>
-    <span style="font-size:9px;color:var(--bl);font-weight:700;text-transform:uppercase;letter-spacing:.4px">Recipe</span>
-  </div>
-  <div style="display:flex;flex-direction:column;align-items:center;gap:4px">
-    <button class="abtn" id="btnPlate" style="background:var(--tr);color:#fff;width:52px;height:52px;font-size:20px;border-radius:50%;border:none;box-shadow:0 4px 12px rgba(0,0,0,.13)">🍽️</button>
-    <span style="font-size:9px;color:var(--tr);font-weight:700;text-transform:uppercase;letter-spacing:.4px">My Plate</span>
-  </div>
-  <div style="display:flex;flex-direction:column;align-items:center;gap:4px">
-    <button class="abtn like" id="btnLike" style="width:52px;height:52px;font-size:20px">♥</button>
-    <span style="font-size:9px;color:var(--vg);font-weight:700;text-transform:uppercase;letter-spacing:.4px">Like</span>
+  <div style="display:flex;flex-direction:column;align-items:center;gap:5px">
+    <button id="btnPlate" style="width:62px;height:62px;font-size:24px;background:var(--tr);color:#fff;border-radius:50%;border:none;box-shadow:0 4px 16px rgba(212,98,42,.4);cursor:pointer;display:flex;align-items:center;justify-content:center">🍽️</button>
+    <span style="font-size:9px;color:var(--tr);font-weight:700;text-transform:uppercase;letter-spacing:.5px">Add to Plate</span>
   </div>
 </div>
 </div>
@@ -323,10 +315,22 @@ function makeCard(rec,isTop){
       </div>
       <div class="rc-tip"><strong>💡 Nutrition tip</strong>${rec.tip}</div>
     </div>`;
-  if(isTop){
-    d.addEventListener('click',e=>{
-      if(Math.abs(d._dx||0)<8)showRecipe(rec);
-    });
+ if(isTop){
+    let pressTimer=null;
+    // Prevent iOS long-press context menu
+    d.style.webkitUserSelect='none';
+    d.style.userSelect='none';
+    d.addEventListener('contextmenu',e=>e.preventDefault());
+    d.addEventListener('touchstart',e=>{
+      pressTimer=setTimeout(()=>{
+        pressTimer=null;
+        showRecipe(rec);
+      },500);
+    },{passive:true});
+    d.addEventListener('touchend',()=>{if(pressTimer){clearTimeout(pressTimer);pressTimer=null;}});
+    d.addEventListener('touchmove',()=>{if(pressTimer){clearTimeout(pressTimer);pressTimer=null;}});
+    // Desktop fallback — regular click opens recipe if card wasn't dragged
+    d.addEventListener('click',()=>{if(Math.abs(d._dx||0)<8)showRecipe(rec);});
   }
   return d;
 }
@@ -348,7 +352,7 @@ function initSwipe(el,rec){
   function end(){
     if(!dragging)return;dragging=false;
     el.style.transition='transform .3s ease';
-    if(dx>90){doLike(rec);}
+   if(dx>90){doPlate(rec);}
     else if(dx<-90){doSkip();}
     else{el.style.transform='';like.style.opacity=0;skip.style.opacity=0;}
   }
@@ -360,10 +364,10 @@ function initSwipe(el,rec){
   el.addEventListener('touchend',end);
 }
 
-function doLike(rec){
+function doPlate(rec){
   S.idx[S.tab]++;
-  if(!S.liked.find(r=>r.id===rec.id)){S.liked.push(rec);updateBadge();}
-  toast('❤️ Added to liked meals!');
+  if(!S.plate.find(r=>r.id===rec.id)){S.plate.push(rec);}
+  toast('🍽️ Added to your plate!');
   renderCards();
 }
 function doSkip(){S.idx[S.tab]++;renderCards();}
@@ -571,26 +575,16 @@ $('btnSkip').addEventListener('click',()=>{
   card.style.transform='translateX(-120%) rotate(-15deg)';
   setTimeout(doSkip,280);
 });
-$('btnLike').addEventListener('click',()=>{
+$('btnPlate').addEventListener('click',()=>{
   const recs=filtered(S.tab);
   const card=document.querySelector('.rc');
   if(!card||S.idx[S.tab]>=recs.length)return;
   const rec=recs[S.idx[S.tab]];
   card.style.transition='transform .3s ease';
   card.style.transform='translateX(120%) rotate(15deg)';
-  setTimeout(()=>doLike(rec),280);
+  setTimeout(()=>doPlate(rec),280);
 });
-$('btnInfo').addEventListener('click',()=>{
-  const recs=filtered(S.tab);
-  if(S.idx[S.tab]<recs.length)showRecipe(recs[S.idx[S.tab]]);
-});
-$('btnPlate').addEventListener('click',()=>{
-  const recs=filtered(S.tab);
-  if(S.idx[S.tab]>=recs.length)return;
-  const rec=recs[S.idx[S.tab]];
-  if(!S.plate.find(r=>r.id===rec.id)){S.plate.push(rec);}
-  toast('🍽️ Added to your plate!');
-});
+
 // ── INIT ───────────────────────────────────────────────────────────────────
 initFilters();
 renderCards();
