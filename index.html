@@ -112,6 +112,13 @@ body{font-family:'Lato',sans-serif;background:var(--cr);color:var(--br);max-widt
 .pfb p{font-size:12px;color:var(--bl);line-height:1.5}
 .pchips{display:flex;flex-wrap:wrap;gap:6px}
 .pchip{background:var(--cd);border-radius:16px;padding:5px 10px;font-size:11px}
+.bitem{background:#FFFDF8;border-radius:13px;padding:11px 13px;box-shadow:0 2px 8px var(--sh);display:flex;align-items:center;gap:11px;margin-bottom:9px}
+.bitem-e{font-size:28px;flex-shrink:0}
+.bitem-info{flex:1;min-width:0}
+.bitem-name{font-family:'Playfair Display',serif;font-size:14px;color:var(--br);margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bitem-meta{font-size:10px;color:var(--bl);display:flex;gap:7px;flex-wrap:wrap}
+.bitem-acts{display:flex;gap:6px;flex-shrink:0}
+.bitem-btn{width:36px;height:36px;border-radius:50%;border:none;cursor:pointer;font-size:15px;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 6px rgba(0,0,0,.1)}
 .bnav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;background:#fff;display:flex;box-shadow:0 -3px 14px rgba(61,43,31,.1);z-index:100}
 .nbtn{flex:1;padding:9px 6px 13px;border:none;background:transparent;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;position:relative}
 .nicon{font-size:19px}.nlbl{font-size:9px;font-family:'Lato',sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:var(--bl)}
@@ -189,7 +196,12 @@ body{font-family:'Lato',sans-serif;background:var(--cr);color:var(--br);max-widt
   <button class="nbtn on" data-nav="Cards"><span class="nicon">🃏</span><span class="nlbl">Discover</span></button>
   <button class="nbtn" data-nav="Liked"><span class="nicon">❤️</span><span class="nlbl">Liked</span><span class="lbadge" id="lbadge" style="display:none">0</span></button>
   <button class="nbtn" data-nav="Plate"><span class="nicon">🍽️</span><span class="nlbl">My Plate</span></button>
+<button class="nbtn" data-nav="Browse"><span class="nicon">📖</span><span class="nlbl">Browse</span></button>
 </nav>
+  <div id="vBrowse" class="view" style="padding:16px 14px 88px">
+  <div class="shdr"><h2>All Recipes 📖</h2><p id="browseSub" style="font-size:11px;color:var(--bl);margin-top:3px"></p></div>
+  <div id="browseList"></div>
+</div>
 <div id="vRecipe"><div id="rContent"></div></div>
 <div class="fov" id="fov"></div>
 <div id="vF">
@@ -458,7 +470,32 @@ function renderLiked(){
 }
 function removeLiked(id){S.liked=S.liked.filter(r=>r.id!==id);updateBadge();renderLiked();renderPlate();}
   function removePlate(id){S.plate=S.plate.filter(r=>r.id!==id);renderPlate();}
-
+function renderBrowse(){
+  const recs=R.filter(r=>{
+    if(S.diet==='veg'&&r.diet!=='veg')return false;
+    if(S.diet==='non-veg'&&r.diet!=='non-veg')return false;
+    if(S.exAl.some(a=>r.al.includes(a)))return false;
+    if(S.exIng.some(i=>r.ex.includes(i)))return false;
+    return true;
+  });
+  $('browseSub').textContent=`${recs.length} recipes · 📋 view recipe · 🍽️ add to plate`;
+  $('browseList').innerHTML=recs.map(r=>`
+    <div class="bitem">
+      <span class="bitem-e">${r.e}</span>
+      <div class="bitem-info">
+        <div class="bitem-name">${r.n}</div>
+        <div class="bitem-meta">
+          <span>${r.diet==='veg'?'🟢 Veg':'🔴 Non-Veg'}</span>
+          <span>⏱ ${r.t}</span>
+          <span>👨‍👩‍👧 ${r.s}</span>
+        </div>
+      </div>
+      <div class="bitem-acts">
+        <button class="bitem-btn" style="background:#fff;color:var(--bl)" onclick="showRecipe(R.find(x=>x.id==='${r.id}'))">📋</button>
+        <button class="bitem-btn" style="background:var(--tr);color:#fff" onclick="addToPlateFromRecipe('${r.id}')">🍽️</button>
+      </div>
+    </div>`).join('');
+}
 // ── PLATE VIEW ─────────────────────────────────────────────────────────────
 function renderPlate(){
   const svgEl=$('plateSvg'),legEl=$('plateLeg'),fbEl=$('plateFB'),chEl=$('plateChips');
@@ -572,8 +609,9 @@ document.querySelectorAll('.nbtn').forEach(btn=>{
     const nav=btn.dataset.nav;
     document.querySelectorAll('.view').forEach(v=>v.classList.remove('on'));
     $('v'+nav).classList.add('on');
-    if(nav==='Liked')renderLiked();
+   if(nav==='Liked')renderLiked();
     if(nav==='Plate')renderPlate();
+    if(nav==='Browse')renderBrowse();
   });
 });
 
