@@ -486,7 +486,7 @@ function renderPlate(){
     return paths;
   }
   const COLS=['#5A9A6F','#E07B39','#E8B84B','#A8C090'];
-  const idealSegs=[{pct:50,col:COLS[0]},{pct:25,col:COLS[1]},{pct:25,col:COLS[2]},{pct:0,col:COLS[3]}];
+  const idealSegs=[{pct:45,col:COLS[0]},{pct:25,col:COLS[1]},{pct:20,col:COLS[2]},{pct:10,col:COLS[3]}];
   const actualSegs=[{pct:vPct,col:COLS[0]},{pct:pPct,col:COLS[1]},{pct:cPct,col:COLS[2]},{pct:fPct,col:COLS[3]}];
   svgEl.innerHTML=`
     <svg width="320" height="160" viewBox="0 0 320 160">
@@ -504,16 +504,32 @@ function renderPlate(){
       <text x="210" y="156" text-anchor="middle" font-size="10" fill="#7A5C45" font-weight="bold">Your Plate</text>
     </svg>`;
   const legSegs=[
-    {pct:vPct,col:'#5A9A6F',lbl:'Veg & Fruit'},
-    {pct:pPct,col:'#E07B39',lbl:'Protein'},
-    {pct:cPct,col:'#E8B84B',lbl:'Carbs'},
-    {pct:fPct,col:'#A8C090',lbl:'Fat'}
+    {pct:vPct,col:'#5A9A6F',lbl:'Veg & Fruit',ideal:45},
+    {pct:pPct,col:'#E07B39',lbl:'Protein',ideal:25},
+    {pct:cPct,col:'#E8B84B',lbl:'Carbs',ideal:20},
+    {pct:fPct,col:'#A8C090',lbl:'Fat',ideal:10}
   ];
-  legEl.innerHTML=legSegs.map(s=>`
-    <div class="pleg-item">
+  const fiberEst=Math.min(Math.round(avg.v*0.6+avg.c*0.15),100);
+  const fiberMsg=fiberEst<35?'Low — add more veg & whole grains':fiberEst<65?'Moderate — good going!':'High — excellent!';
+  legEl.innerHTML=legSegs.map(s=>{
+    const ok=Math.abs(s.pct-s.ideal)<=8;
+    return `<div class="pleg-item">
       <div class="pleg-dot" style="background:${s.col}"></div>
-      <div><div class="pleg-lbl">${s.lbl}</div><div class="pleg-val">${s.pct}% <span style="font-size:9px;color:var(--bl)">(ideal: ${s.lbl==='Veg & Fruit'?'50':s.lbl==='Fat'?'~':'25'}%)</span></div></div>
-    </div>`).join('');
+      <div><div class="pleg-lbl">${s.lbl}</div>
+        <div class="pleg-val">${s.pct}%</div>
+        <div style="font-size:9px;color:${ok?'#4A7C59':'#C0392B'};font-weight:700">${ok?'✓':'↑'} aim ${s.ideal}%</div>
+      </div></div>`;
+  }).join('')
+  +`<div class="pleg-item" style="grid-column:1/-1;gap:10px">
+      <div class="pleg-dot" style="background:#8B6914"></div>
+      <div style="flex:1">
+        <div class="pleg-lbl">Fibre Score</div>
+        <div style="height:6px;background:var(--cd);border-radius:3px;margin-top:4px;overflow:hidden">
+          <div style="width:${fiberEst}%;height:100%;background:#8B6914;border-radius:3px;transition:width .5s"></div>
+        </div>
+        <div style="font-size:9px;color:var(--bl);margin-top:3px">${fiberMsg}</div>
+      </div>
+    </div>`;
   // Feedback
   let emoji='😊',title='Good balance!',msg='Your selections look well-rounded. Keep it up!';
   if(avg.v<20){emoji='🥦';title='Add more vegetables!';msg='Try adding a veggie-rich dish — aim for at least half the plate to be vegetables and fruit.';}
