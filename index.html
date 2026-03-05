@@ -613,6 +613,7 @@ function renderBrowse(){
     if(S.diet==='non-veg'&&r.diet!=='non-veg')return false;
     if(S.exAl.some(a=>r.al.includes(a)))return false;
     if(S.exIng.some(i=>r.ex.includes(i)))return false;
+    if(S.tab!=='all'&&!r.cat.includes(S.tab))return false;
     return true;
   });
   $('browseSub').textContent=`${recs.length} recipes · 📋 view recipe · 🍽️ add to plate`;
