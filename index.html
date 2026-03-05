@@ -384,7 +384,7 @@ R.forEach(r=>{
   }
 });
 // ── STATE ──────────────────────────────────────────────────────────────────
-const S={tab:'dinner',diet:'all',exAl:[],exIng:[],liked:[],plate:[],idx:{dinner:0,tiffin:0,snack:0,breakfast:0}};
+const S={tab:'dinner',diet:'all',exAl:[],exIng:[],liked:[],plate:[],browseCat:'all',idx:{all:0,dinner:0,tiffin:0,snack:0,breakfast:0}};
 const $=id=>document.getElementById(id);
 
 // ── FILTER ─────────────────────────────────────────────────────────────────
@@ -509,7 +509,7 @@ function doPlate(rec){
   toast('🍽️ Added to your plate!');
   renderCards();
 }
-function resetCards(){S.idx[S.tab]=0;renderCards();}
+function resetCards(){S.idx[S.tab]=0;S.idx['all']=0;renderCards();}
 function updateBadge(){const b=$('lbadge');b.textContent=S.liked.length;b.style.display=S.liked.length?'flex':'none';}
 
 // ── RECIPE DETAIL ──────────────────────────────────────────────────────────
