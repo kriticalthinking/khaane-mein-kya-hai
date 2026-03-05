@@ -407,17 +407,19 @@ function renderCards(){
   const area=$('cardArea');
   const recs=filtered(S.tab);
   const idx=S.idx[S.tab];
-  const stack=recs.slice(idx,idx+3);
   area.innerHTML='';
-  if(!stack.length){
-    area.innerHTML=`<div class="nocards"><span class="big">🙌</span><h3>You've seen them all!</h3><p>Change the filters or reset to start fresh.</p><button class="rbtn" onclick="resetCards()">Start Over 🔄</button></div>`;
+  if(!recs.length){
+    area.innerHTML=`<div class="nocards"><span class="big">🍽️</span><h3>No recipes match your filters</h3><p>Try changing the diet or filter settings.</p></div>`;
     return;
   }
+  const wrappedIdx=idx%recs.length;
+  S.idx[S.tab]=wrappedIdx;
+  const stack=[recs[wrappedIdx],recs[(wrappedIdx+1)%recs.length],recs[(wrappedIdx+2)%recs.length]];
   [...stack].reverse().forEach((rec,ri)=>{
     const i=stack.length-1-ri;
     const card=makeCard(rec,i===0);
     card.style.zIndex=10-i;
-    if(i>0)card.style.transform=`scale(${1-i*.04}) translateY(${i*10}px)`;
+    if(i>0)card.style.transform=`scale(${1-i*.06}) translateY(${i*16}px)`;
     area.appendChild(card);
   });
   if(stack[0])initSwipe(area.lastChild,stack[0]);
@@ -429,7 +431,7 @@ function makeCard(rec,isTop){
   d.innerHTML=`
     <div class="sind like">❤️ YUM!</div>
     <div class="sind skip">✕ SKIP</div>
-    <div class="rc-top">
+    <div class="rc-top" style="background:({'breakfast':'linear-gradient(145deg,#FDEAA8,#F0A500)','dinner':'linear-gradient(145deg,#E8845A,#B8471A)','tiffin':'linear-gradient(145deg,#A8D8EA,#5B8FA8)','snack':'linear-gradient(145deg,#B8E6B8,#4A7C59)'}[rec.cat[0]]||'linear-gradient(145deg,#F5D080,#E8845A)')">
       <span class="rc-emoji">${rec.e}</span>
       <span class="rc-badge ${rec.diet}">${rec.diet==='veg'?'🟢 Veg':'🔴 Non-Veg'}</span>
     </div>
@@ -504,7 +506,7 @@ function initSwipe(el,rec){
 }
 
 function doPlate(rec){
-  S.idx[S.tab]++;
+  S.idx[S.tab]=(S.idx[S.tab]+1)%filtered(S.tab).length;
   if(!S.plate.find(r=>r.id===rec.id)){S.plate.push(rec);}
   toast('🍽️ Added to your plate!');
   renderCards();
