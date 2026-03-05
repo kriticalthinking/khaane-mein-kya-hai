@@ -482,8 +482,9 @@ function initSwipe(el,rec){
     if(Math.abs(dx)>90){
       el.style.transform=`translateX(${dx>0?120:-120}%) rotate(${dx>0?15:-15}deg)`;
       setTimeout(()=>{
-        if(dx>0){S.idx[S.tab]++;}
-        else{S.idx[S.tab]=Math.max(0,S.idx[S.tab]-1);}
+       const recs=filtered(S.tab);
+        if(dx>0){S.idx[S.tab]=S.idx[S.tab]>=recs.length-1?0:S.idx[S.tab]+1;}
+        else{S.idx[S.tab]=S.idx[S.tab]<=0?recs.length-1:S.idx[S.tab]-1;}
         renderCards();
       },280);
     } else {
