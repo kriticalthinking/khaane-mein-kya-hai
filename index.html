@@ -177,12 +177,12 @@ body{font-family:'Lato',sans-serif;background:var(--cr);color:var(--br);max-widt
   <p class="sub">Healthy meal ideas for your little ones — quick, balanced and fuss-free</p>
   <div class="ob-steps">
     <div class="ob-step">
-      <span class="ob-icon">👈</span>
-      <div class="ob-text"><strong>Swipe left to skip</strong>Not feeling this one? Move on.</div>
+      <span class="ob-icon">👆</span>
+      <div class="ob-text"><strong>Swipe left or right to browse</strong>Flip through meal ideas at your own pace.</div>
     </div>
     <div class="ob-step">
       <span class="ob-icon">🍽️</span>
-      <div class="ob-text"><strong>Swipe right or tap 🍽️ to add to plate</strong>Build tonight's meal plan.</div>
+      <div class="ob-text"><strong>Tap 🍽️ to add to your plate</strong>Build tonight's meal plan intentionally.</div>
     </div>
     <div class="ob-step">
       <span class="ob-icon">✋</span>
@@ -191,6 +191,10 @@ body{font-family:'Lato',sans-serif;background:var(--cr);color:var(--br);max-widt
     <div class="ob-step">
       <span class="ob-icon">⚖️</span>
       <div class="ob-text"><strong>Check My Plate for balance</strong>See if your meals hit the right nutrition mix.</div>
+    </div>
+    <div class="ob-step">
+      <span class="ob-icon">📖</span>
+      <div class="ob-text"><strong>Browse all recipes</strong>Search and filter all 50 meals, snacks and tiffins — add any directly to your plate.</div>
     </div>
   </div>
   <button class="ob-go" onclick="dismissOnboarding()">Let's go! →</button>
@@ -214,22 +218,13 @@ body{font-family:'Lato',sans-serif;background:var(--cr);color:var(--br);max-widt
 </div>
 <div id="vCards" class="view on">
   <div class="card-area" id="cardArea"></div>
- <div style="display:flex;justify-content:space-between;align-items:center;padding:0 12px;margin-bottom:4px">
-  <div style="display:flex;align-items:center;gap:5px;color:#C0392B;font-size:11px;font-weight:700;opacity:.7">
-    <span style="font-size:18px">←</span> Skip
-  </div>
-  <span style="font-size:10px;color:var(--bl);opacity:.6">Hold card for recipe</span>
-  <div style="display:flex;align-items:center;gap:5px;color:var(--tr);font-size:11px;font-weight:700;opacity:.7">
-    Add to Plate <span style="font-size:18px">→</span>
-  </div>
+<div style="text-align:center;padding:0 12px;margin-bottom:6px">
+  <div style="color:var(--bl);font-size:11px;font-weight:700;opacity:.6;margin-bottom:2px">← Swipe to browse →</div>
+  <div style="font-size:10px;color:var(--bl);opacity:.5">Hold card to view full recipe</div>
 </div>
- <div class="acts" style="gap:24px;justify-content:center;padding:8px 0">
+<div class="acts" style="gap:24px;justify-content:center;padding:8px 0">
   <div style="display:flex;flex-direction:column;align-items:center;gap:5px">
-    <button class="abtn skip" id="btnSkip" style="width:62px;height:62px;font-size:24px;background:#fff;color:var(--nv)">✕</button>
-    <span style="font-size:9px;color:var(--nv);font-weight:700;text-transform:uppercase;letter-spacing:.5px">Skip</span>
-  </div>
-  <div style="display:flex;flex-direction:column;align-items:center;gap:5px">
-    <button id="btnPlate" style="width:62px;height:62px;font-size:24px;background:var(--tr);color:#fff;border-radius:50%;border:none;box-shadow:0 4px 16px rgba(212,98,42,.4);cursor:pointer;display:flex;align-items:center;justify-content:center">🍽️</button>
+    <button id="btnPlate" style="width:68px;height:68px;font-size:26px;background:var(--tr);color:#fff;border-radius:50%;border:none;box-shadow:0 4px 16px rgba(212,98,42,.4);cursor:pointer;display:flex;align-items:center;justify-content:center">🍽️</button>
     <span style="font-size:9px;color:var(--tr);font-weight:700;text-transform:uppercase;letter-spacing:.5px">Add to Plate</span>
   </div>
 </div>
@@ -484,9 +479,14 @@ function initSwipe(el,rec){
   function end(){
     if(!dragging)return;dragging=false;
     el.style.transition='transform .3s ease';
-   if(dx>90){doPlate(rec);}
-    else if(dx<-90){doSkip();}
-    else{el.style.transform='';like.style.opacity=0;skip.style.opacity=0;}
+    if(Math.abs(dx)>90){
+      el.style.transform=`translateX(${dx>0?120:-120}%) rotate(${dx>0?15:-15}deg)`;
+      setTimeout(()=>{S.idx[S.tab]++;renderCards();},280);
+    } else {
+      el.style.transform='';
+      like.style.opacity=0;
+      skip.style.opacity=0;
+    }
   }
   el.addEventListener('mousedown',e=>{start(e.clientX,e.clientY);});
   document.addEventListener('mousemove',e=>{if(dragging)move(e.clientX);});
@@ -502,7 +502,6 @@ function doPlate(rec){
   toast('🍽️ Added to your plate!');
   renderCards();
 }
-function doSkip(){S.idx[S.tab]++;renderCards();}
 function resetCards(){S.idx[S.tab]=0;renderCards();}
 function updateBadge(){const b=$('lbadge');b.textContent=S.liked.length;b.style.display=S.liked.length?'flex':'none';}
 
@@ -779,14 +778,7 @@ document.querySelectorAll('.dbtn').forEach(btn=>{
 });
 
 // ── BUTTON ACTIONS ─────────────────────────────────────────────────────────
-$('btnSkip').addEventListener('click',()=>{
-  const recs=filtered(S.tab);
-  const card=document.querySelector('.rc');
-  if(!card||S.idx[S.tab]>=recs.length)return;
-  card.style.transition='transform .3s ease';
-  card.style.transform='translateX(-120%) rotate(-15deg)';
-  setTimeout(doSkip,280);
-});
+
 $('btnPlate').addEventListener('click',()=>{
   const recs=filtered(S.tab);
   const card=document.querySelector('.rc');
