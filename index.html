@@ -211,6 +211,7 @@ body{font-family:'Lato',sans-serif;background:var(--cr);color:var(--br);max-widt
   </div>
 </header>
 <div class="tabs">
+  <button class="tab" data-t="all">All</button>
   <button class="tab on" data-t="dinner">🌙 Dinner</button>
   <button class="tab" data-t="tiffin">🎒 Tiffin</button>
   <button class="tab" data-t="snack">🫙 Snack</button>
@@ -389,11 +390,12 @@ const $=id=>document.getElementById(id);
 // ── FILTER ─────────────────────────────────────────────────────────────────
 function filtered(tab){
   return R.filter(r=>{
-    if(!r.cat.includes(tab))return false;
+    if(tab!=='all'&&!r.cat.includes(tab))return false;
     if(S.diet==='veg'&&r.diet!=='veg')return false;
     if(S.diet==='non-veg'&&r.diet!=='non-veg')return false;
     if(S.exAl.some(a=>r.al.includes(a)))return false;
-    if(S.exIng.some(i=>r.ex.includes(i)))return false;
+   if(S.exIng.some(i=>r.ex.includes(i)))return false;
+    if(S.tab!=='all'&&!r.cat.includes(S.tab))return false;
     return true;
   });
 }
@@ -767,7 +769,8 @@ document.querySelectorAll('.tab').forEach(btn=>{
     document.querySelectorAll('.tab').forEach(b=>b.classList.remove('on'));
     btn.classList.add('on');
     S.tab=btn.dataset.t;
-    renderCards();
+    if($('vBrowse').classList.contains('on'))renderBrowse();
+    else renderCards();
   });
 });
 
