@@ -136,6 +136,12 @@ body{font-family:'Lato',sans-serif;background:var(--cr);color:var(--br);max-widt
 .fchip{padding:5px 11px;border-radius:16px;border:2px solid var(--cd);background:#fff;font-size:12px;cursor:pointer;font-family:'Lato',sans-serif;color:var(--br);transition:.15s}
 .fchip.on{background:var(--tr);border-color:var(--tr);color:#fff}
 .fapply{width:100%;padding:12px;background:var(--tr);color:#fff;border:none;border-radius:11px;font-family:'Lato',sans-serif;font-weight:700;font-size:14px;cursor:pointer;margin-top:4px}
+#infoModal{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:800;display:none;align-items:center;justify-content:center;padding:20px}
+#infoModal.on{display:flex}
+.imodal{background:var(--cr);border-radius:18px;padding:22px;max-width:390px;width:100%;max-height:82vh;overflow-y:auto}
+.imodal h2{font-family:'Playfair Display',serif;font-size:18px;color:var(--br);margin-bottom:10px}
+.imodal p{font-size:13px;color:var(--bl);line-height:1.6;margin-bottom:10px}
+.imodal-close{width:100%;padding:11px;background:var(--tr);color:#fff;border:none;border-radius:10px;font-family:'Lato',sans-serif;font-weight:700;font-size:14px;cursor:pointer;margin-top:4px}
 #onboarding{position:fixed;inset:0;background:linear-gradient(160deg,#3D2B1F,#B8471A);z-index:1000;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 28px;text-align:center}
 #onboarding h1{font-family:'Playfair Display',serif;color:#fff;font-size:28px;margin-bottom:6px;line-height:1.2}
 #onboarding .sub{color:rgba(255,255,255,.8);font-size:14px;margin-bottom:36px;line-height:1.5}
@@ -150,6 +156,21 @@ body{font-family:'Lato',sans-serif;background:var(--cr);color:var(--br);max-widt
 </style>
 </head>
 <body>
+<div id="infoModal">
+  <div class="imodal">
+    <h2>🍽️ About the Balance Plate</h2>
+    <p>This app uses the <strong>Harvard Healthy Eating Plate</strong> model — developed by nutrition scientists at Harvard T.H. Chan School of Public Health, and one of the most evidence-based frameworks for healthy eating.</p>
+    <p><strong>The ideal visual plate for children:</strong></p>
+    <p>🟢 <strong>½ plate — Vegetables & Fruit</strong><br>Variety and colour. The more the better. Potatoes don't count.</p>
+    <p>🟠 <strong>¼ plate — Protein</strong><br>Dal, legumes, eggs, paneer, chicken, fish. Choose whole food sources over processed.</p>
+    <p>🟡 <strong>¼ plate — Whole Grains</strong><br>Roti, millet, brown rice, oats. Whole grains over refined maida wherever possible.</p>
+    <p>🫒 <strong>Healthy fats</strong> — ghee, olive oil, coconut oil, avocado and nuts are used in cooking but don't occupy plate space. They're shown separately as an indicator.</p>
+    <p>🌾 <strong>Fibre score</strong> is estimated from the vegetable and whole grain content of your selected dishes — a higher score means better gut health and sustained energy.</p>
+    <p><strong>Remember:</strong> no single meal needs to be perfect. The balance across a full day — or even a week — is what matters.</p>
+    <p style="font-size:11px;opacity:.6">Source: Harvard T.H. Chan School of Public Health — The Nutrition Source. <em>Healthy Eating Plate.</em> hsph.harvard.edu/nutritionsource</p>
+    <button class="imodal-close" onclick="$('infoModal').classList.remove('on')">Got it ✓</button>
+  </div>
+</div>
 <div id="onboarding">
   <div style="font-size:52px;margin-bottom:12px">🍽️</div>
   <h1>Khaane Mein<br>Kya Hai?</h1>
@@ -221,7 +242,10 @@ body{font-family:'Lato',sans-serif;background:var(--cr);color:var(--br);max-widt
  <button onclick="switchTo('Cards')" style="background:none;border:none;color:var(--bl);font-size:12px;font-weight:700;cursor:pointer;padding:2px 0 10px;opacity:.65">← Back to Discover</button>
   <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
     <div class="shdr" style="margin-bottom:0;text-align:left"><h2>My Balance Plate 🍽️</h2><p>Based on meals added to plate</p></div>
-    <button onclick="clearPlate()" style="background:none;border:1px solid var(--cd);border-radius:16px;padding:5px 12px;font-size:11px;font-family:'Lato',sans-serif;font-weight:700;color:var(--bl);cursor:pointer;opacity:.7;white-space:nowrap">Clear ✕</button>
+   <div style="display:flex;gap:7px">
+  <button onclick="$('infoModal').classList.add('on')" style="background:none;border:1px solid var(--cd);border-radius:50%;width:30px;height:30px;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center">ℹ️</button>
+  <button onclick="clearPlate()" style="background:none;border:1px solid var(--cd);border-radius:16px;padding:5px 12px;font-size:11px;font-family:'Lato',sans-serif;font-weight:700;color:var(--bl);cursor:pointer;opacity:.7;white-space:nowrap">Clear ✕</button>
+</div>
   </div>
   <div class="plate-wrap" id="plateSvg"></div>
   <div class="pleg" id="plateLeg"></div>
@@ -303,7 +327,66 @@ const R=[
 {id:'r49',n:'Cucumber Raita',e:'🥒',cat:['snack','lunch'],diet:'veg',t:'5 mins',s:2,al:['dairy'],ex:['cucumber'],pf:{p:20,c:10,v:60,f:5},ing:[['Thick yogurt (dahi)','1 cup'],['Cucumber (grated or diced)','1 medium'],['Roasted cumin, salt, pepper, coriander/mint','to taste']],steps:['Squeeze excess water from grated cucumber.','Whisk yogurt smooth.','Mix in cucumber, cumin, salt and pepper.','Garnish with fresh coriander or mint.','Serve chilled.'],tip:"Live yogurt is one of the best probiotic foods for children's gut microbiome.",kid:'Cool, mild and creamy. Perfect alongside any spicy or dry dish to balance the plate.',alt:{dairyFree:'Use coconut yogurt',eggFree:'Already egg-free!',glutenFree:'Already gluten-free!'}},
 {id:'r50',n:'Mini Idli Sambar Bowl',e:'🫙',cat:['breakfast','dinner','tiffin'],diet:'veg',t:'30 mins',s:3,al:[],ex:[],pf:{p:20,c:50,v:25,f:5},ing:[['Idli batter (readymade)','2 cups'],['Toor dal (cooked)','½ cup'],['Mixed vegetables (carrot, onion, tomato)','1.5 cups'],['Sambar powder, tamarind, mustard seeds, curry leaves, oil','to taste']],steps:['Steam idlis in greased moulds for 12–15 mins.','Cook toor dal until very soft. Add tamarind, sambar powder and salt.','Add vegetables and simmer 15 mins.','Prepare mustard-curry leaf tadka and pour into sambar.','Serve mini idlis dunked in a bowl of hot sambar.'],tip:'Fermented idli batter is rich in beneficial bacteria — one of the best traditional probiotic foods.',kid:'Mini idlis in sambar is interactive — children fish the idlis out with a spoon.',alt:{dairyFree:'Already dairy-free!',eggFree:'Already egg-free!',glutenFree:'Already gluten-free!'}}
 ];
-
+// ── NUTRITION OVERRIDES (visual plate proportions v+p+c=100) ──────────────
+const pfUpdates={
+  r01:{v:5,p:20,c:75,fat:'Coconut oil'},
+  r02:{v:10,p:25,c:65,fat:'Ghee'},
+  r03:{v:35,p:30,c:35,fat:'Olive oil'},
+  r04:{v:20,p:65,c:15,fat:'Cashew paste'},
+  r05:{v:55,p:35,c:10,fat:'None'},
+  r06:{v:15,p:5,c:80,fat:'Minimal oil'},
+  r07:{v:5,p:85,c:10,fat:'Olive oil'},
+  r08:{v:15,p:20,c:65,fat:'Coconut oil'},
+  r09:{v:35,p:15,c:50,fat:'Olive oil & nuts'},
+  r10:{v:45,p:50,c:5,fat:'Sesame oil'},
+  r11:{v:20,p:30,c:50,fat:'Sesame oil'},
+  r12:{v:30,p:10,c:60,fat:'Sesame oil'},
+  r13:{v:20,p:45,c:35,fat:'Minimal oil'},
+  r14:{v:25,p:10,c:65,fat:'Minimal oil'},
+  r15:{v:30,p:15,c:55,fat:'Minimal oil'},
+  r16:{v:20,p:15,c:65,fat:'Ghee'},
+  r17:{v:20,p:45,c:35,fat:'Minimal oil'},
+  r18:{v:30,p:10,c:60,fat:'Ghee'},
+  r19:{v:25,p:65,c:10,fat:'Minimal oil'},
+  r20:{v:15,p:40,c:45,fat:'Minimal oil'},
+  r21:{v:10,p:25,c:65,fat:'Ghee'},
+  r22:{v:10,p:30,c:60,fat:'Minimal oil'},
+  r23:{v:65,p:5,c:30,fat:'Minimal oil'},
+  r24:{v:40,p:35,c:25,fat:'Ghee'},
+  r25:{v:25,p:60,c:15,fat:'Minimal oil'},
+  r26:{v:20,p:25,c:55,fat:'Ghee'},
+  r27:{v:25,p:10,c:65,fat:'Olive oil'},
+  r28:{v:10,p:85,c:5,fat:'Olive oil'},
+  r29:{v:50,p:40,c:10,fat:'None'},
+  r30:{v:40,p:10,c:50,fat:'Sesame oil'},
+  r31:{v:5,p:15,c:80,fat:'Minimal oil'},
+  r32:{v:15,p:35,c:50,fat:'Minimal oil'},
+  r33:{v:25,p:60,c:15,fat:'Olive oil'},
+  r34:{v:20,p:65,c:15,fat:'Minimal oil'},
+  r35:{v:35,p:15,c:50,fat:'None'},
+  r36:{v:55,p:30,c:15,fat:'Olive oil'},
+  r37:{v:90,p:5,c:5,fat:'None'},
+  r38:{v:5,p:20,c:75,fat:'Ghee'},
+  r39:{v:45,p:30,c:25,fat:'None'},
+  r40:{v:20,p:10,c:70,fat:'None'},
+  r41:{v:60,p:10,c:30,fat:'Minimal butter'},
+  r42:{v:35,p:15,c:50,fat:'Olive oil'},
+  r43:{v:10,p:30,c:60,fat:'Ghee'},
+  r44:{v:45,p:35,c:20,fat:'Olive oil'},
+  r45:{v:45,p:25,c:30,fat:'Olive oil'},
+  r46:{v:25,p:10,c:65,fat:'Avocado'},
+  r47:{v:20,p:15,c:65,fat:'None'},
+  r48:{v:20,p:35,c:45,fat:'Minimal oil'},
+  r49:{v:55,p:35,c:10,fat:'None'},
+  r50:{v:20,p:25,c:55,fat:'Minimal oil'}
+};
+R.forEach(r=>{
+  if(pfUpdates[r.id]){
+    const u=pfUpdates[r.id];
+    r.pf={v:u.v,p:u.p,c:u.c};
+    r.fatSource=u.fat;
+  }
+});
 // ── STATE ──────────────────────────────────────────────────────────────────
 const S={tab:'dinner',diet:'all',exAl:[],exIng:[],liked:[],plate:[],idx:{dinner:0,tiffin:0,snack:0,breakfast:0}};
 const $=id=>document.getElementById(id);
@@ -554,11 +637,13 @@ function renderPlate(){
     svgEl.innerHTML='<div style="text-align:center;padding:30px;color:var(--bl)"><div style="font-size:48px">🍽️</div><p style="font-size:13px;margin-top:8px">Tap 🍽️ on any meal to build your plate</p></div>';
     legEl.innerHTML='';fbEl.innerHTML='';chEl.innerHTML='';return;
   }
-  const sum=S.plate.reduce((a,r)=>({p:a.p+r.pf.p,c:a.c+r.pf.c,v:a.v+r.pf.v,f:a.f+r.pf.f}),{p:0,c:0,v:0,f:0});
+  const sum=S.plate.reduce((a,r)=>({p:a.p+r.pf.p,c:a.c+r.pf.c,v:a.v+r.pf.v}),{p:0,c:0,v:0});
   const n=S.plate.length;
-  const avg={p:Math.round(sum.p/n),c:Math.round(sum.c/n),v:Math.round(sum.v/n),f:Math.round(sum.f/n)};
-  const tot=avg.p+avg.c+avg.v+avg.f||1;
-  const vPct=Math.round(avg.v/tot*100),pPct=Math.round(avg.p/tot*100),cPct=Math.round(avg.c/tot*100),fPct=100-vPct-pPct-cPct;
+  const avg={p:Math.round(sum.p/n),c:Math.round(sum.c/n),v:Math.round(sum.v/n)};
+  const tot=avg.p+avg.c+avg.v||1;
+  const vPct=Math.round(avg.v/tot*100),pPct=Math.round(avg.p/tot*100),cPct=100-vPct-pPct;
+  const fatSources=[...new Set(S.plate.map(r=>r.fatSource).filter(f=>f&&f!=='None'&&f!=='Minimal oil'&&f!=='Minimal butter'&&f!=='none'))];
+  const fatNote=fatSources.length?fatSources.join(', '):'Minimal added fats — well done!';
   // Draw SVG plates
   function makePlate(segs,cx,cy,r){
     let off=0;
@@ -573,9 +658,9 @@ function renderPlate(){
     }).join('');
     return paths;
   }
-  const COLS=['#5A9A6F','#E07B39','#E8B84B','#A8C090'];
-  const idealSegs=[{pct:45,col:COLS[0]},{pct:25,col:COLS[1]},{pct:20,col:COLS[2]},{pct:10,col:COLS[3]}];
-  const actualSegs=[{pct:vPct,col:COLS[0]},{pct:pPct,col:COLS[1]},{pct:cPct,col:COLS[2]},{pct:fPct,col:COLS[3]}];
+  const COLS=['#5A9A6F','#E07B39','#E8B84B'];
+  const idealSegs=[{pct:50,col:COLS[0]},{pct:25,col:COLS[1]},{pct:25,col:COLS[2]}];
+  const actualSegs=[{pct:vPct,col:COLS[0]},{pct:pPct,col:COLS[1]},{pct:cPct,col:COLS[2]}];
   svgEl.innerHTML=`
     <svg width="320" height="160" viewBox="0 0 320 160">
       <!-- Ideal plate (small, left) -->
@@ -592,15 +677,14 @@ function renderPlate(){
       <text x="210" y="156" text-anchor="middle" font-size="10" fill="#7A5C45" font-weight="bold">Your Plate</text>
     </svg>`;
   const legSegs=[
-    {pct:vPct,col:'#5A9A6F',lbl:'Veg & Fruit',ideal:45},
+    {pct:vPct,col:'#5A9A6F',lbl:'Veg & Fruit',ideal:50},
     {pct:pPct,col:'#E07B39',lbl:'Protein',ideal:25},
-    {pct:cPct,col:'#E8B84B',lbl:'Carbs',ideal:20},
-    {pct:fPct,col:'#A8C090',lbl:'Fat',ideal:10}
+    {pct:cPct,col:'#E8B84B',lbl:'Whole Grains',ideal:25}
   ];
   const fiberEst=Math.min(Math.round(avg.v*0.6+avg.c*0.15),100);
   const fiberMsg=fiberEst<35?'Low — add more veg & whole grains':fiberEst<65?'Moderate — good going!':'High — excellent!';
   legEl.innerHTML=legSegs.map(s=>{
-    const ok=Math.abs(s.pct-s.ideal)<=8;
+    const ok=Math.abs(s.pct-s.ideal)<=10;
     return `<div class="pleg-item">
       <div class="pleg-dot" style="background:${s.col}"></div>
       <div><div class="pleg-lbl">${s.lbl}</div>
@@ -608,7 +692,7 @@ function renderPlate(){
         <div style="font-size:9px;color:${ok?'#4A7C59':'#C0392B'};font-weight:700">${ok?'✓':'↑'} aim ${s.ideal}%</div>
       </div></div>`;
   }).join('')
-  +`<div class="pleg-item" style="grid-column:1/-1;gap:10px">
+  +`<div class="pleg-item" style="grid-column:1/-1">
       <div class="pleg-dot" style="background:#8B6914"></div>
       <div style="flex:1">
         <div class="pleg-lbl">Fibre Score</div>
@@ -617,13 +701,20 @@ function renderPlate(){
         </div>
         <div style="font-size:9px;color:var(--bl);margin-top:3px">${fiberMsg}</div>
       </div>
+    </div>
+    <div class="pleg-item" style="grid-column:1/-1">
+      <div class="pleg-dot" style="background:#C4A35A"></div>
+      <div style="flex:1">
+        <div class="pleg-lbl">Healthy Fats in Your Plate</div>
+        <div style="font-size:12px;color:var(--br);margin-top:2px">${fatNote}</div>
+      </div>
     </div>`;
   // Feedback
-  let emoji='😊',title='Good balance!',msg='Your selections look well-rounded. Keep it up!';
-  if(avg.v<20){emoji='🥦';title='Add more vegetables!';msg='Try adding a veggie-rich dish — aim for at least half the plate to be vegetables and fruit.';}
-  else if(avg.p<15){emoji='💪';title='Boost the protein!';msg='Add a dal, egg, paneer or chicken dish to build strong muscles and support growth.';}
-  else if(avg.c>55){emoji='🌾';title='Slightly carb-heavy';msg='Balance with more vegetables or protein. Try a millet swap or add a salad side.';}
-  else if(vPct>=45&&pPct>=20){emoji='⭐';title='Excellent balance!';msg='Great job! Your plate has a lovely balance of vegetables, protein and wholesome carbs.';}
+ let emoji='😊',title='Good balance!',msg='Your selections look well-rounded. Keep it up!';
+  if(vPct<35){emoji='🥦';title='Add more vegetables!';msg='Aim for half the plate to be vegetables and fruit. Try adding a sabzi, salad or soup.';}
+  else if(pPct<15){emoji='💪';title='Boost the protein!';msg='Add a dal, egg, paneer or chicken dish — growing children need protein at every meal.';}
+  else if(cPct>45){emoji='🌾';title='Slightly carb-heavy';msg='Try swapping one dish for a protein or vegetable-rich option. A millet base helps too.';}
+  else if(vPct>=45&&pPct>=20&&cPct<=30){emoji='⭐';title='Excellent balance!';msg='Great job! Your plate closely matches the Harvard Healthy Eating Plate — well done!';}
   fbEl.innerHTML=`<div class="fe">${emoji}</div><h3>${title}</h3><p>${msg}</p>`;
   chEl.innerHTML=S.plate.map(r=>`<span class="pchip" style="cursor:pointer" onclick="removePlate('${r.id}')">✕ ${r.e} ${r.n}</span>`).join('');
 }
