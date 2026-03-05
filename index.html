@@ -481,7 +481,11 @@ function initSwipe(el,rec){
     el.style.transition='transform .3s ease';
     if(Math.abs(dx)>90){
       el.style.transform=`translateX(${dx>0?120:-120}%) rotate(${dx>0?15:-15}deg)`;
-      setTimeout(()=>{S.idx[S.tab]++;renderCards();},280);
+      setTimeout(()=>{
+        if(dx>0){S.idx[S.tab]++;}
+        else{S.idx[S.tab]=Math.max(0,S.idx[S.tab]-1);}
+        renderCards();
+      },280);
     } else {
       el.style.transform='';
       like.style.opacity=0;
